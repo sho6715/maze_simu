@@ -1063,3 +1063,141 @@ PUBLIC void MAP_searchGoal(
 
 }
 
+
+
+/*シミュレータ用探索プログラム*/
+PRIVATE void Simu_moveNextBlock(
+	enMAP_HEAD_DIR 	en_head,		///< [in] 相対進行方向（マウス進行方向を北としている）
+	BOOL* p_type			///< [in] FALSE: １区間前進状態、TURE:半区間前進状態
+) {
+
+
+	/* 動作 */
+	switch (en_head) {
+
+		/* そのまま前進 */
+	case NORTH:
+		//		MOT_goBlock_Const(1);				// 1区画前進
+		break;
+		// 右に旋回する
+	case EAST:
+		//		MOT_goBlock_FinSpeed(0.5, 0);		// 半区画前進
+		//			TIME_wait( MAP_TURN_WAIT );
+		//		MOT_turn(MOT_R90);									// 右90度旋回
+		//			TIME_wait( MAP_TURN_WAIT );
+		break;
+		// 左に旋回する
+	case WEST:
+		//		MOT_goBlock_FinSpeed(0.5, 0);		// 半区画前進
+		//			TIME_wait( MAP_TURN_WAIT );
+		//		MOT_turn(MOT_L90);									// 右90度旋回
+		//			TIME_wait( MAP_TURN_WAIT );
+		break;
+		// 反転して戻る
+	case SOUTH:
+		//		MOT_goBlock_FinSpeed(0.5, 0);		// 半区画前進
+		//			TIME_wait( MAP_TURN_WAIT );
+		//		MOT_turn(MOT_R180);									// 右180度旋回
+		//			TIME_wait( MAP_TURN_WAIT );
+		
+		break;
+	default:
+		break;
+	}
+
+	/* 進行方向更新 */
+	en_Head = (enMAP_HEAD_DIR)((en_Head + en_head) & (MAP_HEAD_DIR_MAX - 1));
+	//	}
+
+}
+
+
+PRIVATE void Simu_makeMapData(void)
+{
+	UCHAR uc_wall;
+
+	//	走行時の壁情報を迷路情報に書込
+	if ((mx == 0) && (my == 0)) {
+		uc_wall = 0xfe;
+	}
+	else {
+		uc_wall = g_trgtMap[my][mx];
+	}
+	g_sysMap[my][mx] = uc_wall;
+
+	//	隣の区間のＭＡＰデータも更新する
+	if (mx != (MAP_X_SIZE - 1)) {
+		g_sysMap[my][mx + 1] = (g_sysMap[my][mx + 1] & 0x77) | 0x80 | ((uc_wall << 2) & 0x08);
+	}
+	if (mx != 0) {
+		g_sysMap[my][mx - 1] = (g_sysMap[my][mx - 1] & 0xdd) | 0x20 | ((uc_wall >> 2) & 0x02);
+	}
+	if (my != (MAP_Y_SIZE - 1)) {
+		g_sysMap[my + 1][mx] = (g_sysMap[my + 1][mx] & 0xbb) | 0x40 | ((uc_wall << 2) & 0x04);
+	}
+	if (my != 0) {
+		g_sysMap[my - 1][mx] = (g_sysMap[my - 1][mx] & 0xee) | 0x10 | ((uc_wall >> 2) & 0x01);
+	}
+
+}
+
+
+
+PUBLIC void Simu_searchGoal(
+	UCHAR 			uc_trgX, 		///< [in] 目標x座標
+	UCHAR 			uc_trgY, 		///< [in] 目標y座標 
+	enMAP_ACT_MODE 	en_type, 		///< [in] 探索方法
+	enSEARCH_MODE	en_search		///< [in] 探索方法
+) {
+	enMAP_HEAD_DIR	en_head = NORTH;
+	BOOL		bl_type = TRUE;			// 現在位置、FALSE: １区間前進状態、TURE:半区間前進状態
+
+
+		/* 迷路探索 */
+	while (1) {
+		MAP_refMousePos(en_Head);								// 座標更新
+		MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+		maze_show_search(en_Head,mx,my);//map表記
+		/* 超信地旋回探索 */
+		if (SEARCH_TURN == en_search) {
+
+//			MAP_makeMapData();												// 壁データから迷路データを作成			← ここでデータ作成をミスっている
+			Simu_makeMapData();//壁用のプログラムを作成			
+			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);						// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
+
+			/* 次の区画へ移動 */
+//			if ((mx == uc_trgX) && (my == uc_trgY)) {
+			if (us_cmap[my][mx] == 0) {
+				std::cout << "goal!!\n";
+				//				MAP_actGoal();										// ゴール時の動作
+				break;
+			}
+			else {
+//				MAP_moveNextBlock(en_head, &bl_type);				// 次の区画へ移動								← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
+				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
+			}
+		}
+		/* スラローム探索 */
+		else if (SEARCH_SURA == en_search) {
+
+//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
+			Simu_makeMapData();
+			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);				// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
+
+			/* 次の区画へ移動 */
+//			if ((mx == uc_trgX) && (my == uc_trgY)) {
+			if (us_cmap[my][mx] == 0) {
+				std::cout << "goal!!\n";
+				//				MAP_actGoal();										// ゴール時の動作
+				break;
+			}
+			else {
+//				MAP_moveNextBlock_Sura(en_head, &bl_type, FALSE);	// 次の区画へ移動						← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
+				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
+			
+			}
+		}
+
+	}
+
+}

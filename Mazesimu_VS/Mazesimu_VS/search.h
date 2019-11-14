@@ -20,19 +20,20 @@
 #include "typedefine.h"						// 定義
 #include "map_cmd.h"
 
+#include "Maze.h"
 
 //**************************************************
 // 定義（define）
 //**************************************************
 /* 迷路サイズ */
-#define GOAL_MAP_X_def					( 7 )				// ゴールのX区画数（横方向） [区画]
+/*#define GOAL_MAP_X_def					( 7 )				// ゴールのX区画数（横方向） [区画]
 #define GOAL_MAP_Y_def					( 7 )				// ゴールのY区画数（縦方向） [区画]
 #define MAP_X_SIZE					( 16 )				// 迷路のX区画数（横方向） [区画]
 #define MAP_Y_SIZE					( 16 )				// 迷路のY区画数（縦方向） [区画]
 
 #define MAP_X_SIZE_REAL				( 16 )					// 迷路の実X区画数（横方向） [区画]
 #define MAP_Y_SIZE_REAL				( 16 )					// 迷路の実Y区画数（縦方向） [区画]
-
+*/
 //**************************************************
 // 列挙体（enum）
 //**************************************************
@@ -100,5 +101,13 @@ PUBLIC void MAP_actGoalLED(void);
 PUBLIC void MAP_ClearMapData(void);
 
 PUBLIC void MAP_showcountLog(void);
+
+
+PUBLIC void Simu_searchGoal(
+	UCHAR 			uc_trgX, 		///< [in] 目標x座標
+	UCHAR 			uc_trgY, 		///< [in] 目標y座標 
+	enMAP_ACT_MODE 	en_type, 		///< [in] 探索方法
+	enSEARCH_MODE	en_search 		///< [in] 探索方法
+);
 
 #endif //_SEARCH_H

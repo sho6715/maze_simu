@@ -29,7 +29,10 @@ int main()
 
 	MAP_showcountLog();
 	std::cout << "\n";
-	maze_set.maze_show();
+	maze_set.maze_show_trgt();
+	std::cout << "\n";
+	MAP_init();
+	Simu_searchGoal(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH, SEARCH_SURA);
 
 /*	MAP_makeCmdList(0, 0, NORTH, goal_map_x, goal_map_y, &en_endDir);		// ドライブコマンド作成
 	MAP_makeSuraCmdList();													// スラロームコマンド作成

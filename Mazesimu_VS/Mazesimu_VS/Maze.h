@@ -12,6 +12,7 @@
 #include "common.h"
 #include "typedefine.h"
 #include "search.h"
+#include "map_cmd.h"
 
 extern PUBLIC UCHAR	g_trgtMap[MAP_Y_SIZE][MAP_X_SIZE];		///< ³‰ð–À˜H
 
@@ -27,11 +28,18 @@ public:
 
 	void readfile(std::string file_path);
 	void show_countmap(void);
-	void maze_show(void);
-
+	void maze_show_trgt(void);
 private:
 
 };
+
+void direction_show(
+	enMAP_HEAD_DIR	en_head,
+	char x,
+	char y,
+	char mx,
+	char my);
+void maze_show_search(enMAP_HEAD_DIR	en_head, char mx, char my);
 
 
 #endif 

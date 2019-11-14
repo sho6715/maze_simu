@@ -88,7 +88,97 @@ void mazeC::show_countmap(void){
 }
 
 
-void mazeC::maze_show(void)
+void direction_show(
+	enMAP_HEAD_DIR	en_head,
+	char x,
+	char y,
+	char mx,
+	char my)
+{
+	if ((x == mx) && (y == my)) {
+		switch (en_head) {
+
+		case NORTH:
+			std::cout << "^";
+			break;
+		case EAST:
+			std::cout << ">";
+			break;
+		case WEST:
+			std::cout << "<";
+			break;
+		case SOUTH:
+			std::cout << "V";
+			break;
+		default:
+			break;
+		}
+	}
+	else {
+		std::cout << " ";
+	}
+}
+
+void maze_show_search(enMAP_HEAD_DIR en_head,char mx,char my)
+{
+	SHORT	x, y;
+	CHAR	c_data;
+	printf("     ");
+	for (x = 0; x < MAP_X_SIZE; x++) {
+		printf("+---");
+	}
+	printf("+\n\r");
+
+	for (y = MAP_Y_SIZE *2-1; y >= 0; y--) {
+		if (y % 2 == 0) {
+			printf("     ");
+		}
+		else {
+			printf("   %2d", y/2);
+		}
+		for (x = 0; x < MAP_X_SIZE *2; x++) {
+			c_data = (UCHAR)g_sysMap[y/2][x/2];
+			if (y % 2 == 0) {
+				if (x % 2 == 0) {
+					if ((c_data & 0x04) == 0) {
+						printf("+   ");
+					}
+					else {
+						printf("+---");
+					}
+				}
+			}
+
+			else {
+				if (x % 2 == 0) {
+					if ((c_data & 0x08) == 0) {
+						printf(" ");
+					}
+					else {
+						printf("|");
+					}
+				}
+				else {//ここに座標と方向をみて表記するプログラムを入れて実際には動かす
+					printf(" ");
+					direction_show(en_head,x/2,y/2,mx,my);
+					printf(" ");
+				}
+			}
+		}
+		printf("|");
+
+		printf("\n\r");
+	}
+
+	printf("     ");
+	for (x = 0; x < MAP_X_SIZE; x++) {
+		printf(" %2d ", x % 10);
+	}
+	printf("\n\r\n\r");
+
+}
+
+void mazeC::maze_show_trgt(void)
 {
 	SHORT	x, y;
 	CHAR	c_data;
@@ -98,15 +188,15 @@ void mazeC::maze_show(void)
 	}
 	printf("+\n\r");
 
-	for (y = sizeY*2-1; y >= 0; y--) {
+	for (y = sizeY * 2 - 1; y >= 0; y--) {
 		if (y % 2 == 0) {
 			printf("     ");
 		}
 		else {
-			printf("   %2d", y/2);
+			printf("   %2d", y / 2);
 		}
-		for (x = 0; x < sizeX*2; x++) {
-			c_data = (UCHAR)g_trgtMap[y/2][x/2];
+		for (x = 0; x < sizeX * 2; x++) {
+			c_data = (UCHAR)g_trgtMap[y / 2][x / 2];
 			if (y % 2 == 0) {
 				if (x % 2 == 0) {
 					if ((c_data & 0x04) == 0) {
