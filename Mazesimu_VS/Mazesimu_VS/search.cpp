@@ -15,6 +15,8 @@
 //**************************************************
 #include "search.h"
 
+#include <chrono>
+#include <thread>
 
 //**************************************************
 // 定義（define）
@@ -1157,11 +1159,11 @@ PUBLIC void Simu_searchGoal(
 	while (1) {
 		MAP_refMousePos(en_Head);								// 座標更新
 		MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
-		maze_show_search(en_Head,mx,my);//map表記
+//		maze_show_search(en_Head,mx,my);//map表記
 		/* 超信地旋回探索 */
 		if (SEARCH_TURN == en_search) {
 
-//			MAP_makeMapData();												// 壁データから迷路データを作成			← ここでデータ作成をミスっている
+			//			MAP_makeMapData();												// 壁データから迷路データを作成			← ここでデータ作成をミスっている
 			Simu_makeMapData();//壁用のプログラムを作成			
 			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);						// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
 
@@ -1173,14 +1175,14 @@ PUBLIC void Simu_searchGoal(
 				break;
 			}
 			else {
-//				MAP_moveNextBlock(en_head, &bl_type);				// 次の区画へ移動								← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
+				//				MAP_moveNextBlock(en_head, &bl_type);				// 次の区画へ移動								← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
 				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
 			}
 		}
 		/* スラローム探索 */
 		else if (SEARCH_SURA == en_search) {
 
-//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
+			//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
 			Simu_makeMapData();
 			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);				// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
 
@@ -1192,12 +1194,33 @@ PUBLIC void Simu_searchGoal(
 				break;
 			}
 			else {
-//				MAP_moveNextBlock_Sura(en_head, &bl_type, FALSE);	// 次の区画へ移動						← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
+				//				MAP_moveNextBlock_Sura(en_head, &bl_type, FALSE);	// 次の区画へ移動						← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
 				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
-			
+
 			}
 		}
+		/* 帰還探索 */
+		else if (SEARCH_RETURN == en_search) {
 
+			//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
+			Simu_makeMapData();
+//			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);				// ここの変更
+
+			/* 次の区画へ移動 */
+//			if ((mx == uc_trgX) && (my == uc_trgY)) {
+			if (us_cmap[my][mx] == 0) {
+				std::cout << "goal!!\n";
+				//				MAP_actGoal();										// ゴール時の動作
+				break;
+			}
+			else {
+				//				MAP_moveNextBlock_Sura(en_head, &bl_type, FALSE);	// 次の区画へ移動						← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
+				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
+
+			}
+		}
+		maze_show_search(en_Head, mx, my);//map表記
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
 
 }

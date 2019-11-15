@@ -171,9 +171,7 @@ void maze_show_search(enMAP_HEAD_DIR en_head,char mx,char my)
 	}
 
 	printf("     ");
-	for (x = 0; x < MAP_X_SIZE; x++) {
-		printf(" %2d ", x % 10);
-	}
+
 	printf("\n\r\n\r");
 
 }

@@ -8,7 +8,6 @@
 #include "Maze.h"
 #include <algorithm>
 
-
 int main()
 {
 	enMAP_HEAD_DIR		en_endDir;

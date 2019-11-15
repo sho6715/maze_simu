@@ -55,6 +55,7 @@ typedef enum {
 	SEARCH_TURN = 0,		// 超信地旋回探索
 	SEARCH_SURA,		// スラローム探索
 	SEARCH_SKEW,		// 斜め探索
+	SEARCH_RETURN,
 	SEARCH_MAX,
 }enSEARCH_MODE;
 

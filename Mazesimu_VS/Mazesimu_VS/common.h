@@ -10,7 +10,6 @@
 #include <sstream>
 
 
-
 //循環参照でバグるので避難
 /*　方位　*/
 typedef enum {
