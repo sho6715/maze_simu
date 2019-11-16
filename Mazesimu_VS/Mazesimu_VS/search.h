@@ -102,7 +102,7 @@ PUBLIC void MAP_actGoalLED(void);
 PUBLIC void MAP_ClearMapData(void);
 
 PUBLIC void MAP_showcountLog(void);
-
+PUBLIC void MAP_Goalsize(int size);
 
 PUBLIC void Simu_searchGoal(
 	UCHAR 			uc_trgX, 		///< [in] –Ú•WxÀ•W

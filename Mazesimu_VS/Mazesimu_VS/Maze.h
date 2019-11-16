@@ -24,7 +24,7 @@ public:
 	int sizeY;
 	int goal_map_x = 32;	//変更のため最大値をデフォルトに入れている
 	int goal_map_y = 32;
-//	UCHAR	g_trgtMap[MAP_Y_SIZE][MAP_X_SIZE];		///< 正解迷路
+	int goal_count = 0;
 
 	void readfile(std::string file_path);
 	void show_countmap(void);

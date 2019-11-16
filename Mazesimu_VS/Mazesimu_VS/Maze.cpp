@@ -36,6 +36,7 @@ void mazeC::readfile(std::string file_path)
 			case 'G':
 				if (goal_map_x > x) goal_map_x = x;
 				if (goal_map_y > y / 2) goal_map_y = y / 2;
+				goal_count++;
 
 				ch_side = str[x * 4];
 				if (ch_side == '|') {

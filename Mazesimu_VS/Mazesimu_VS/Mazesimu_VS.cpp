@@ -23,6 +23,7 @@ int main()
 	MAP_showLog();
 
 	MAP_Goal_init();
+	MAP_Goalsize(maze_set.goal_count);
 	MAP_setPos(0, 0, NORTH);								// スタート位置
 	MAP_makeContourMap(maze_set.goal_map_x, maze_set.goal_map_y, BEST_WAY);					// 等高線マップを作る
 
@@ -31,7 +32,15 @@ int main()
 	maze_set.maze_show_trgt();
 	std::cout << "\n";
 	MAP_init();
+	
 	Simu_searchGoal(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH, SEARCH_SURA);
+
+	std::cout<<"RETURN_START\n";
+
+
+
+	Simu_searchGoal( 0, 0, SEARCH, SEARCH_RETURN );
+
 
 /*	MAP_makeCmdList(0, 0, NORTH, goal_map_x, goal_map_y, &en_endDir);		// ドライブコマンド作成
 	MAP_makeSuraCmdList();													// スラロームコマンド作成

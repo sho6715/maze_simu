@@ -52,6 +52,8 @@ PRIVATE UCHAR		uc_back[MAP_Y_SIZE][MAP_X_SIZE];			// 迷路データ
 PUBLIC UCHAR		GOAL_MAP_X;					//ゴール座標変更プログラム用ｘ
 PUBLIC UCHAR		GOAL_MAP_Y;					//ゴール座標変更プログラム用ｙ
 
+PUBLIC UCHAR		GOAL_SIZE;
+
 //**************************************************
 // プロトタイプ宣言（ファイル内で必要なものだけ記述）
 //**************************************************
@@ -490,10 +492,21 @@ PUBLIC void  MAP_makeContourMap(
 	}
 	/* 目標地点の等高線を0に設定 */
 	us_cmap[uc_goalY][uc_goalX] = 0;
+//	if (mode == 4){
 	us_cmap[uc_goalY+1][uc_goalX] = 0;
 	us_cmap[uc_goalY][uc_goalX+1] = 0;
 	us_cmap[uc_goalY+1][uc_goalX+1] = 0;
-
+/*	else if (mode == 9){
+	us_cmap[uc_goalY+1][uc_goalX] = 0;
+	us_cmap[uc_goalY][uc_goalX+1] = 0;
+	us_cmap[uc_goalY+1][uc_goalX+1] = 0;
+	us_cmap[uc_goalY+2][uc_goalX] = 0;
+	us_cmap[uc_goalY+2][uc_goalX+1] = 0;
+	us_cmap[uc_goalY][uc_goalX+2] = 0;
+	us_cmap[uc_goalY+1][uc_goalX+2] = 0;
+	us_cmap[uc_goalY+2][uc_goalX+2] = 0;
+	}
+*/
 	/* 等高線マップを作成 */
 	uc_dase = 0;
 	do {
@@ -1143,7 +1156,10 @@ PRIVATE void Simu_makeMapData(void)
 
 }
 
-
+PUBLIC void MAP_Goalsize(int size)
+{
+	GOAL_SIZE= size;
+}
 
 PUBLIC void Simu_searchGoal(
 	UCHAR 			uc_trgX, 		///< [in] 目標x座標
@@ -1154,7 +1170,10 @@ PUBLIC void Simu_searchGoal(
 	enMAP_HEAD_DIR	en_head = NORTH;
 	BOOL		bl_type = TRUE;			// 現在位置、FALSE: １区間前進状態、TURE:半区間前進状態
 
-
+/*	if (en_search = SEARCH_RETURN){
+		Simu_searchCmdList(0,0, en_staDir,uc_trgX,uc_trgtY, &en_endDir)
+	}
+*/
 		/* 迷路探索 */
 	while (1) {
 		MAP_refMousePos(en_Head);								// 座標更新
@@ -1204,14 +1223,17 @@ PUBLIC void Simu_searchGoal(
 
 			//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
 			Simu_makeMapData();
-//			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);				// ここの変更
+			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);				
 
 			/* 次の区画へ移動 */
 //			if ((mx == uc_trgX) && (my == uc_trgY)) {
 			if (us_cmap[my][mx] == 0) {
-				std::cout << "goal!!\n";
 				//				MAP_actGoal();										// ゴール時の動作
-				break;
+				//ゴールのターゲット座標の変更を行う(最後まで到達したらスタートに戻る)同一のプログラムを最初にも実行して目標座標を更新する
+				if ((mx == 0)&&(my == 0)){
+					std::cout << "goal!!\n";
+					break;
+				}
 			}
 			else {
 				//				MAP_moveNextBlock_Sura(en_head, &bl_type, FALSE);	// 次の区画へ移動						← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
