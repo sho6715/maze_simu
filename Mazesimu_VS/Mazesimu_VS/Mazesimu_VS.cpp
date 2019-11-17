@@ -8,12 +8,16 @@
 #include "Maze.h"
 #include <algorithm>
 
+#include <chrono>
+#include <thread>
+
 int main()
 {
 	enMAP_HEAD_DIR		en_endDir;
 	std::cout << "start\n";
 	const std::string file_path = "../mazedata/16MM2017CX.maze";
 //	const std::string file_path = "../mazedata/16MM2018H_semi.maze";
+//	const std::string file_path = "../mazedata/32MM2018HX.maze";
 
 	mazeC maze_set;
 	maze_set.readfile(file_path);
@@ -32,12 +36,16 @@ int main()
 	maze_set.maze_show_trgt();
 	std::cout << "\n";
 	MAP_init();
+	MAP_Goalsize(4);
 	
 	Simu_searchGoal(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH, SEARCH_SURA);
 
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
 	std::cout<<"RETURN_START\n";
-
-
+	MAP_Goalsize(1);
+//	MAP_makeContourMap(0, 0, SEARCH);
+//	MAP_showcountLog();
 
 	Simu_searchGoal( 0, 0, SEARCH, SEARCH_RETURN );
 

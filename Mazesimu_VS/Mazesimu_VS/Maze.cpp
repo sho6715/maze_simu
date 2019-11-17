@@ -173,8 +173,6 @@ void maze_show_search(enMAP_HEAD_DIR en_head,char mx,char my)
 
 	printf("     ");
 
-	printf("\n\r\n\r");
-
 }
 
 void mazeC::maze_show_trgt(void)

@@ -85,7 +85,8 @@ PRIVATE USHORT us_LogIndex = 0;
 PRIVATE USHORT us_LogWallCut[30];
 PRIVATE USHORT us_LogIndexWallCut = 0;
 
-
+PUBLIC UCHAR	Return_X;
+PUBLIC UCHAR	Return_Y;
 
 //**************************************************
 // プロトタイプ宣言（ファイル内で必要なものだけ記述）
@@ -1024,11 +1025,11 @@ PUBLIC void Simu_searchCmdList(
 	/* 前進ステップ数を初期化する */
 	uc_goStep = 0;
 	us_pt = 0;
-
+//	printf("mx%d,my%d\n", uc_staX, uc_staY);
 	/* 迷路情報からコマンド作成 */
 	while (1) {
 		us_high = us_cmap[uc_staY][uc_staX] - 1;
-		if (g_sysMap[uc_staY][uc_staX]&0xf0 != 0xf0){
+		if ((g_sysMap[uc_staY][uc_staX]&0xf0) != 0xf0){
 			Return_X = uc_staX;
 			Return_Y = uc_staY;
 			break;
@@ -1074,7 +1075,11 @@ PUBLIC void Simu_searchCmdList(
 		en_staDir = en_nowDir;
 
 //		if ((uc_staX == uc_endX) && (uc_staY == uc_endY)) break;
-		if (us_cmap[uc_staY][uc_staX] == 0) break;
+		if (us_cmap[uc_staY][uc_staX] == 0) {
+			Return_X = 0;
+			Return_Y = 0;
+			break;
+		}
 	}
 
 
