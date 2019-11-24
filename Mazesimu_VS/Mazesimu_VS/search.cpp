@@ -54,12 +54,27 @@ PUBLIC UCHAR		GOAL_MAP_Y;					//ゴール座標変更プログラム用ｙ
 
 PUBLIC UCHAR		GOAL_SIZE;
 
+
+//等高線マップを更新を止めるための移動区画規定変数
+PRIVATE UCHAR		uc_max_x = GOAL_MAP_X_def;
+PRIVATE UCHAR		uc_max_y = GOAL_MAP_Y_def;
+
 //**************************************************
 // プロトタイプ宣言（ファイル内で必要なものだけ記述）
 //**************************************************
 extern PUBLIC	UCHAR		dcom[];					// 超地信旋回用
 extern PUBLIC	UCHAR		scom[];					// スラローム用
 extern PUBLIC	UCHAR		tcom[];					// 斜め走行用
+
+//TKR
+/* 既知区間加速 */
+typedef struct
+{
+	UCHAR	uc_StrCnt;
+	BOOL	bl_Known;
+}stMAP_KNOWN;
+
+PRIVATE stMAP_KNOWN		st_known = { 1,FALSE };
 
 
 // *************************************************************************
@@ -486,6 +501,15 @@ PUBLIC void  MAP_makeContourMap(
 
 	en_type = en_type;		// コンパイルワーニング回避（いずれ削除）
 
+	LARGE_INTEGER freq;
+	QueryPerformanceFrequency(&freq);
+
+	LARGE_INTEGER start, end;
+
+	QueryPerformanceCounter(&start);
+
+
+
 	/* 等高線マップを初期化する */
 	for (i = 0; i < MAP_SMAP_MAX_VAL; i++) {
 		us_cmap[i / MAP_Y_SIZE][i & (MAP_X_SIZE - 1)] = MAP_SMAP_MAX_VAL - 1;
@@ -508,16 +532,22 @@ PUBLIC void  MAP_makeContourMap(
 		us_cmap[uc_goalY+2][uc_goalX+2] = 0;
 	}
 
+	if (mx > uc_max_x)uc_max_x = mx;
+	if (my > uc_max_y)uc_max_y = my;
+	printf("maxX%d\n", uc_max_x);
+	printf("maxY%d\n", uc_max_y);
+
 	/* 等高線マップを作成 */
 	uc_dase = 0;
 	do {
 		uc_level = 0;
 		uc_new = uc_dase + 1;
 		for (y = 0; y < MAP_Y_SIZE; y++) {
+			if (uc_max_y+1 < y) break;
 			for (x = 0; x < MAP_X_SIZE; x++) {
 				if (us_cmap[y][x] == uc_dase) {
 					uc_wallData = g_sysMap[y][x];
-
+					if (uc_max_x+1 < x) break;
 					/* 探索走行 */
 					if (SEARCH == en_type) {
 						if (((uc_wallData & 0x01) == 0x00) && (y != (MAP_Y_SIZE - 1))) {
@@ -572,11 +602,20 @@ PUBLIC void  MAP_makeContourMap(
 							}
 						}
 					}
+					if ((x == mx) && (y == my))	break;
 				}
 			}
+			if ((x == mx) && (y == my))break;
 		}
+		if ((x == mx) && (y == my)) break;
 		uc_dase = uc_dase + 1;
 	} while (uc_level != 0);
+
+
+	QueryPerformanceCounter(&end);
+
+	double time = static_cast<double>(end.QuadPart - start.QuadPart) * 1000.0 / freq.QuadPart;
+	printf("time %lf[ms]\n", time);
 
 #if 0
 	/* debug */
@@ -1160,7 +1199,86 @@ PRIVATE void Simu_makeMapData(void)
 PUBLIC void MAP_Goalsize(int size)
 {
 	GOAL_SIZE= size;
+	if (size = 4) {
+		uc_max_x = uc_max_x + 1;
+		uc_max_y = uc_max_y + 1;
+	}
+	else if (size = 9) {
+		uc_max_x = uc_max_x + 2;
+		uc_max_y = uc_max_y + 2;
+	}
 }
+
+PUBLIC void  MAP_makeReturnContourMap() 
+{
+	USHORT		x, y, i;		// ループ変数
+	UCHAR		uc_dase;		// 基準値
+	UCHAR		uc_new;			// 新値
+	UCHAR		uc_level;		// 等高線
+	UCHAR		uc_wallData;	// 壁情報
+
+	/* 等高線マップを初期化する */
+	for (i = 0; i < MAP_SMAP_MAX_VAL; i++) {
+		us_cmap[i / MAP_Y_SIZE][i & (MAP_X_SIZE - 1)] = MAP_SMAP_MAX_VAL - 1;
+	}
+	/* 目標地点の等高線を0に設定 */
+	us_cmap[0][0] = 0;
+
+	/* 等高線マップを作成 */
+	uc_dase = 0;
+	do {
+		uc_level = 0;
+		uc_new = uc_dase + 1;
+		for (y = 0; y < MAP_Y_SIZE; y++) {
+			for (x = 0; x < MAP_X_SIZE; x++) {
+				if (us_cmap[y][x] == uc_dase) {
+					uc_wallData = g_sysMap[y][x];
+					/* 探索走行 */
+	
+						if (((uc_wallData & 0x01) == 0x00) && (y != (MAP_Y_SIZE - 1))) {
+							if (us_cmap[y + 1][x] == MAP_SMAP_MAX_VAL - 1) {
+								us_cmap[y + 1][x] = uc_new;
+								uc_level++;
+							}
+						}
+						if (((uc_wallData & 0x02) == 0x00) && (x != (MAP_X_SIZE - 1))) {
+							if (us_cmap[y][x + 1] == MAP_SMAP_MAX_VAL - 1) {
+								us_cmap[y][x + 1] = uc_new;
+								uc_level++;
+							}
+						}
+						if (((uc_wallData & 0x04) == 0x00) && (y != 0)) {
+							if (us_cmap[y - 1][x] == MAP_SMAP_MAX_VAL - 1) {
+								us_cmap[y - 1][x] = uc_new;
+								uc_level++;
+							}
+						}
+						if (((uc_wallData & 0x08) == 0x00) && (x != 0)) {
+							if (us_cmap[y][x - 1] == MAP_SMAP_MAX_VAL - 1) {
+								us_cmap[y][x - 1] = uc_new;
+								uc_level++;
+							}
+						}
+
+				}
+			}
+		}
+		uc_dase = uc_dase + 1;
+	} while (uc_level != 0);
+
+#if 0
+	/* debug */
+	for (x = 0; x < 4; x++) {
+
+		for (y = 0; y < 4; y++) {
+			us_Log[y][x][us_LogPt] = us_cmap[y][x];
+		}
+	}
+	us_LogPt++;
+#endif
+
+}
+
 
 PUBLIC void Simu_searchGoal(
 	UCHAR 			uc_trgX, 		///< [in] 目標x座標
@@ -1195,7 +1313,7 @@ PUBLIC void Simu_searchGoal(
 	while (1) {
 		MAP_refMousePos(en_Head);								// 座標更新
 		MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
-//		MAP_showcountLog();
+		MAP_showcountLog();
 //		maze_show_search(en_Head,mx,my);//map表記
 		/* 超信地旋回探索 */
 		if (SEARCH_TURN == en_search) {
@@ -1246,7 +1364,8 @@ PUBLIC void Simu_searchGoal(
 //			if ((mx == uc_trgX) && (my == uc_trgY)) {
 			if ((us_cmap[my][mx] == 0)||((g_sysMap[uc_trgY][uc_trgX]&0xf0) == 0xf0)) {
 				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
-				MAP_makeContourMap(uc_goalX, uc_goalX, en_type);
+//				MAP_makeContourMap(uc_goalX, uc_goalX, en_type);//自己座標で処理終了するため全体マップ作成不能20191121
+				MAP_makeReturnContourMap();
 				Simu_searchCmdList(uc_staX, uc_staY, en_Head, uc_goalX, uc_goalX, &en_endDir);
 //				MAP_showcountLog();
 //				std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -1254,7 +1373,6 @@ PUBLIC void Simu_searchGoal(
 				uc_trgX = Return_X;
 				uc_trgY = Return_Y;
 				printf("goalx%d,goaly%d\n", Return_X, Return_Y);
-				//ゴールのターゲット座標の変更を行う(最後まで到達したらスタートに戻る)同一のプログラムを最初にも実行して目標座標を更新する
 				if ((mx == 0)&&(my == 0)){
 					MAP_actGoal();
 					std::cout << "goal!!\n";
@@ -1272,4 +1390,317 @@ PUBLIC void Simu_searchGoal(
 		printf("mx%d,my%d\n", mx, my);
 	}
 	printf("mx%d,my%d\n", mx, my);
+}
+
+//TKRの既知区間を移植
+// *************************************************************************
+//   機能		： 進む区画方向が探索済みか未探索かを判定
+//   注意		： なし
+//   メモ		： なし
+//   引数		： なし
+//   返り値		： TRUE:探索済み	FALSE:未探索
+// **************************    履    歴    *******************************
+// 		v1.0		2014.09.29			TKR			新規
+// *************************************************************************/
+PRIVATE BOOL MAP_KnownAcc(void) {
+
+	BOOL	bl_acc = FALSE;
+#if 0
+	if ((g_sysMap[my][mx] & 0xf0) == 0xf0) {
+		bl_acc = TRUE;
+	}
+	else {
+		bl_acc = FALSE;
+	}
+#endif
+#if 1
+	switch (en_Head) {
+	case NORTH:
+		if ((g_sysMap[my + 1][mx] & 0xf1) == 0xf0) {
+			bl_acc = TRUE;
+		}
+
+		break;
+
+	case EAST:
+		if ((g_sysMap[my][mx + 1] & 0xf2) == 0xf0) {
+			bl_acc = TRUE;
+		}
+		break;
+
+	case SOUTH:
+		if ((g_sysMap[my - 1][mx] & 0xf4) == 0xf0) {
+			bl_acc = TRUE;
+		}
+		break;
+
+	case WEST:
+		if ((g_sysMap[my][mx - 1] & 0xf8) == 0xf0) {
+			bl_acc = TRUE;
+		}
+		break;
+
+	default:
+		break;
+	}
+#endif
+
+	return	bl_acc;
+
+}
+
+// *************************************************************************
+//   機能		： 次の区画に移動する（既知区間加速）
+//   注意		： なし
+//   メモ		： なし
+//   引数		： 相対進行方向（マウス進行方向を北としている）、前進状態（FALSE: １区間前進状態、TURE:半区間前進状態）
+//   返り値		： なし
+// **************************    履    歴    *******************************
+// 		v1.0		2014.09.30			外川			新規
+// *************************************************************************/
+PRIVATE void MAP_moveNextBlock_acc(enMAP_HEAD_DIR en_head, BOOL* p_type)
+{
+	*p_type = TRUE;
+//	f_MoveBackDist = 0;
+
+	/* 動作 */
+	switch (en_head) {
+
+		/* そのまま前進 */
+	case NORTH:
+		*p_type = FALSE;
+
+		if (MAP_KnownAcc() == FALSE) {					// 次に進む区画が未探索のとき
+
+			if (st_known.uc_StrCnt <= 2) {
+//				MOT_goBlock_Const(1);					// 1区画の場合は等速のまま
+			}
+			else {
+				printf("NORTH\n");
+				printf("StrCnt%d\n", st_known.uc_StrCnt);
+				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+//				MOT_setTrgtSpeed(MAP_KNOWN_ACC_SPEED);									// 既知区間加速するときの目標速度	
+//				MOT_goBlock_FinSpeed((FLOAT)(st_known.uc_StrCnt - 1), MAP_SEARCH_SPEED);				// n区画前進
+//				MOT_setTrgtSpeed(MAP_SEARCH_SPEED);										// 目標速度をデフォルト値に戻す
+			}
+			st_known.uc_StrCnt = 1;
+			st_known.bl_Known = FALSE;
+
+		}
+		else {
+
+			std::cout << "既知区間加速中\n";
+			st_known.uc_StrCnt++;			// 移動区画の加算
+			st_known.bl_Known = TRUE;
+		}
+
+		break;
+
+		/* 右に旋回する */
+	case EAST:
+
+		if (st_known.bl_Known == TRUE) {		// 直線分を消化
+			if (st_known.uc_StrCnt <= 2) {
+//				MOT_goBlock_Const(1);					// 1区画の場合は等速のまま
+			}
+			else {
+				printf("EAST\n");
+				printf("StrCnt%d\n", st_known.uc_StrCnt);
+				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+//				MOT_setTrgtSpeed(MAP_KNOWN_ACC_SPEED);									// 既知区間加速するときの目標速度	
+//				MOT_goBlock_FinSpeed((FLOAT)(st_known.uc_StrCnt - 1), MAP_SEARCH_SPEED);				// n区画前進
+//				MOT_setTrgtSpeed(MAP_SEARCH_SPEED);										// 目標速度をデフォルト値に戻す
+			}
+			st_known.uc_StrCnt = 1;		/////////////////////////////////////////
+			st_known.bl_Known = FALSE;
+		}
+
+/*		if (uc_SlaCnt < MAP_SLA_NUM_MAX) {
+			MOT_goSla(MOT_R90S, PARAM_getSra(SLA_90));	// 右スラローム
+			uc_SlaCnt++;
+		}
+		else {
+			MOT_goBlock_FinSpeed(0.5, 0);			// 半区画前進
+			TIME_wait(MAP_TURN_WAIT);
+			MOT_turn(MOT_R90);						// 右90度旋回
+			TIME_wait(MAP_TURN_WAIT);
+			uc_SlaCnt = 0;
+*/			/* 壁当て姿勢制御（左に壁があったらバック＋移動距離を加算する） */
+/*			if (((en_Head == NORTH) && ((g_sysMap[my][mx] & 0x08) != 0)) ||		// 北を向いていて西に壁がある
+				((en_Head == EAST) && ((g_sysMap[my][mx] & 0x01) != 0)) ||		// 東を向いていて北に壁がある
+				((en_Head == SOUTH) && ((g_sysMap[my][mx] & 0x02) != 0)) ||		// 南を向いていて東に壁がある
+				((en_Head == WEST) && ((g_sysMap[my][mx] & 0x04) != 0)) 			// 西を向いていて南に壁がある
+				) {
+				MOT_goHitBackWall();					// バックする
+				f_MoveBackDist = MOVE_BACK_DIST_SURA;	// バックした分の移動距離[区画]を加算
+				TIME_wait(MAP_SLA_WAIT);				// 時間待ち
+			}
+			*p_type = TRUE;							// 次は半区間（＋バック）分進める
+		}
+*/		break;
+
+		/* 左に旋回する */
+	case WEST:
+
+		if (st_known.bl_Known == TRUE) {		// 直線分を消化
+			if (st_known.uc_StrCnt <= 2) {
+//				MOT_goBlock_Const(1);					// 1区画の場合は等速のまま
+			}
+			else {
+				printf("WEST\n");
+				printf("StrCnt%d\n", st_known.uc_StrCnt);
+				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+//				MOT_setTrgtSpeed(MAP_KNOWN_ACC_SPEED);									// 既知区間加速するときの目標速度	
+//				MOT_goBlock_FinSpeed((FLOAT)(st_known.uc_StrCnt - 1), MAP_SEARCH_SPEED);				// n区画前進
+//				MOT_setTrgtSpeed(MAP_SEARCH_SPEED);										// 目標速度をデフォルト値に戻す
+			}
+			st_known.uc_StrCnt = 1;			//////////////////////////////////////
+			st_known.bl_Known = FALSE;
+		}
+
+/*		if (uc_SlaCnt < MAP_SLA_NUM_MAX) {
+			MOT_goSla(MOT_L90S, PARAM_getSra(SLA_90));	// 左スラローム
+			uc_SlaCnt++;
+		}
+		else {
+
+			MOT_goBlock_FinSpeed(0.5, 0);		// 半区画前進
+			TIME_wait(MAP_TURN_WAIT);
+			MOT_turn(MOT_L90);					// 左90度旋回
+			TIME_wait(MAP_TURN_WAIT);
+			uc_SlaCnt = 0;
+*/			/* 壁当て姿勢制御（後ろに壁があったらバック＋移動距離を加算する） */
+/*			if (((en_Head == NORTH) && ((g_sysMap[my][mx] & 0x02) != 0)) ||		// 北を向いていて東に壁がある
+				((en_Head == EAST) && ((g_sysMap[my][mx] & 0x04) != 0)) ||		// 東を向いていて南に壁がある
+				((en_Head == SOUTH) && ((g_sysMap[my][mx] & 0x08) != 0)) ||		// 南を向いていて西に壁がある
+				((en_Head == WEST) && ((g_sysMap[my][mx] & 0x01) != 0)) 			// 西を向いていて北に壁がある
+				) {
+				MOT_goHitBackWall();					// バックする
+				f_MoveBackDist = MOVE_BACK_DIST_SURA;	// バックした分の移動距離[区画]を加算
+				TIME_wait(MAP_SLA_WAIT);				// 時間待ち
+			}
+			*p_type = TRUE;							// 次は半区間（＋バック）分進める
+		}
+*/		break;
+
+		/* 反転して戻る */
+	case SOUTH:
+//		MOT_goBlock_FinSpeed(0.5, 0);			// 半区画前進
+//		TIME_wait(MAP_SLA_WAIT);
+//		MOT_turn(MOT_R180);									// 右180度旋回
+//		TIME_wait(MAP_SLA_WAIT);
+//		uc_SlaCnt = 0;
+
+		/* 壁当て姿勢制御（後ろに壁があったらバック＋移動距離を加算する） */
+/*		if (((en_Head == NORTH) && ((g_sysMap[my][mx] & 0x01) != 0)) ||		// 北を向いていて北に壁がある
+			((en_Head == EAST) && ((g_sysMap[my][mx] & 0x02) != 0)) ||		// 東を向いていて東に壁がある
+			((en_Head == SOUTH) && ((g_sysMap[my][mx] & 0x04) != 0)) ||		// 南を向いていて南に壁がある
+			((en_Head == WEST) && ((g_sysMap[my][mx] & 0x08) != 0)) 			// 西を向いていて西に壁がある
+			) {
+			MOT_goHitBackWall();					// バックする
+			f_MoveBackDist = MOVE_BACK_DIST_SURA;	// バックした分の移動距離[区画]を加算
+			TIME_wait(MAP_SLA_WAIT);				// 時間待ち
+		}
+		*p_type = TRUE;								// 次は半区間＋バック分進める
+*/		break;
+
+	default:
+		break;
+	}
+
+#ifndef POWER_RELESASE
+	/* 進行方向更新 */
+//	en_Head = (enMAP_HEAD_DIR)( (en_Head + en_head) & (MAP_HEAD_DIR_MAX-1) );
+	en_Head = (enMAP_HEAD_DIR)(((UCHAR)en_Head + (UCHAR)en_head) & (MAP_HEAD_DIR_MAX - 1));
+#else
+	/* 前進中にパワーリリース機能が働いてレジュームしなければならない */
+	if ((TRUE == DCMC_isPowerRelease()) && (en_head == NORTH)) {
+
+		MOT_goBack_Const(MOT_BACK_POLE);					// １つ前の柱まで後退
+		MAP_makeMapData();									// 壁データから迷路データを作成			← ここでデータ作成をミスっている
+		MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);			// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
+		MAP_moveNextBlock(en_head, p_type);					// もう１度呼び出し（次の区画へ移動）
+	}
+	else {
+		/* 進行方向更新 */
+		en_Head = (enMAP_HEAD_DIR)((en_Head + en_head) & (MAP_HEAD_DIR_MAX - 1));
+	}
+#endif
+}
+
+
+// *************************************************************************
+//   機能		： 探索（既知区間加速）
+//   注意		： なし
+//   メモ		： なし
+//   引数		： 目標x座標、目標y座標、探索方法
+//   返り値		： なし
+// **************************    履    歴    *******************************
+// 		v1.0		2019.11.3			TKR			searchGoal関数から移植
+// *************************************************************************/
+PUBLIC void MAP_searchGoalKnown(UCHAR uc_trgX, UCHAR uc_trgY, enMAP_ACT_MODE en_type)
+{
+	enMAP_HEAD_DIR	en_head = NORTH;
+	BOOL			bl_type = TRUE;			// 現在位置、FALSE: １区間前進状態、TURE:半区間前進状態
+
+//	MOT_setTrgtSpeed(MAP_SEARCH_SPEED);		// 目標速度
+	//MOT_setNowSpeed(0.0f);
+
+	/* ゴール座標目指すときは尻当て考慮 */
+/*	if ((uc_trgX == GOAL_MAP_X) && (uc_trgY == GOAL_MAP_Y)) {
+		f_MoveBackDist = MOVE_BACK_DIST;
+	}
+	else {
+		f_MoveBackDist = 0;
+	}
+
+	uc_SlaCnt = 0;
+*/
+	/* 迷路探索 */
+	while (1) {
+		MAP_refMousePos(en_Head);							// 座標更新
+		MAP_makeContourMap(uc_trgX, uc_trgY, en_type);	// 等高線マップを作る
+
+		/* ダミー壁挿入 */
+	/*
+		if( (uc_trgX == GOAL_MAP_X) && (uc_trgY == GOAL_MAP_Y) ){
+			g_sysMap[0][0]	= 0x01;
+			g_sysMap[0][1]	= 0x04;
+		}
+	*/
+		if (TRUE == bl_type) {
+//			MOT_goBlock_FinSpeed(0.5 + f_MoveBackDist, MAP_SEARCH_SPEED);		// 半区画前進(バックの移動量を含む)
+//			f_MoveBackDist = 0;
+		}
+
+		// 既知区間加速するときは実行しない
+		if (st_known.bl_Known != TRUE) {
+//			MAP_makeMapData();		// 壁データから迷路データを作成
+			Simu_makeMapData();
+//			SPK_debug();
+		}
+
+		MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);			// 等高線MAP法で進行方向を算出
+
+		/* 次の区画へ移動 */
+		if ((mx == uc_trgX) && (my == uc_trgY)) {
+
+			/* ダミー壁削除 */
+		/*
+			if( (uc_trgX == GOAL_MAP_X) && (uc_trgY == GOAL_MAP_Y) ){
+				g_sysMap[0][0]	&= ~0x01;
+				g_sysMap[0][1]	&= ~0x04;
+			}
+		*/
+			MAP_actGoal();		// ゴール時の動作
+			return;				// 探索終了
+		}
+		else {
+			MAP_moveNextBlock_acc(en_head, &bl_type);
+
+		}
+		maze_show_search(en_Head, mx, my);//map表記
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		printf("mx%d,my%d\n", mx, my);
+	}
 }

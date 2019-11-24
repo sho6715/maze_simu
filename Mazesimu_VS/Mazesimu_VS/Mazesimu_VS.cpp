@@ -15,9 +15,10 @@ int main()
 {
 	enMAP_HEAD_DIR		en_endDir;
 	std::cout << "start\n";
-	const std::string file_path = "../mazedata/16MM2017CX.maze";
+//	const std::string file_path = "../mazedata/16MM2017CX.maze";
 //	const std::string file_path = "../mazedata/16MM2018H_semi.maze";
-//	const std::string file_path = "../mazedata/32MM2018HX.maze";
+	const std::string file_path = "../mazedata/32MM2018HX.maze";
+//	const std::string file_path = "../mazedata/16MM2019H_East.maze";
 
 	mazeC maze_set;
 	maze_set.readfile(file_path);
@@ -36,8 +37,10 @@ int main()
 	maze_set.maze_show_trgt();
 	std::cout << "\n";
 	MAP_init();
-	MAP_Goalsize(4);
+	MAP_Goalsize(9);
 	
+//	MAP_searchGoalKnown(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH);
+
 	Simu_searchGoal(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH, SEARCH_SURA);
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));

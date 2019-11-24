@@ -111,4 +111,7 @@ PUBLIC void Simu_searchGoal(
 	enSEARCH_MODE	en_search 		///< [in] ’Tõ•û–@
 );
 
+//TKR
+PUBLIC void MAP_searchGoalKnown(UCHAR uc_trgX, UCHAR uc_trgY, enMAP_ACT_MODE en_type);
+
 #endif //_SEARCH_H

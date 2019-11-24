@@ -39,8 +39,8 @@
 /* BOOLå^ */
 #define	TRUE			(1)
 #define	FALSE			(0)
-typedef	unsigned char	BOOL;
-typedef	BOOL* PBOOL;
+//typedef	unsigned char	BOOL;
+//typedef	BOOL* PBOOL;
 
 /* constÅAstaticÅAvolatile */
 #define CONST				const
