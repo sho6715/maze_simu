@@ -17,8 +17,9 @@ int main()
 	std::cout << "start\n";
 //	const std::string file_path = "../mazedata/16MM2017CX.maze";
 //	const std::string file_path = "../mazedata/16MM2018H_semi.maze";
-	const std::string file_path = "../mazedata/32MM2018HX.maze";
+//	const std::string file_path = "../mazedata/32MM2018HX.maze";
 //	const std::string file_path = "../mazedata/16MM2019H_East.maze";
+	const std::string file_path = "../mazedata/test20191125.maze";
 
 	mazeC maze_set;
 	maze_set.readfile(file_path);
@@ -39,9 +40,9 @@ int main()
 	MAP_init();
 	MAP_Goalsize(9);
 	
-//	MAP_searchGoalKnown(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH);
+	MAP_searchGoalKnown(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH);
 
-	Simu_searchGoal(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH, SEARCH_SURA);
+//	Simu_searchGoal(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH, SEARCH_SURA);
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -49,8 +50,8 @@ int main()
 	MAP_Goalsize(1);
 //	MAP_makeContourMap(0, 0, SEARCH);
 //	MAP_showcountLog();
-
-	Simu_searchGoal( 0, 0, SEARCH, SEARCH_RETURN );
+	MAP_searchGoalKnown(0, 0, SEARCH);
+//	Simu_searchGoal( 0, 0, SEARCH, SEARCH_RETURN );
 
 
 /*	MAP_makeCmdList(0, 0, NORTH, goal_map_x, goal_map_y, &en_endDir);		// ドライブコマンド作成

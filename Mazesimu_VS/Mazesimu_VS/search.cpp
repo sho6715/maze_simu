@@ -700,7 +700,7 @@ PRIVATE void MAP_calcMouseDir(
 		}
 
 		*p_head = (enMAP_HEAD_DIR)((en_tmpHead - en_Head) & 3);		// 移動方向
-
+		printf("進行方向%d\n", p_head);
 	}
 	// 制御方法指定なし
 	else {
@@ -1209,7 +1209,7 @@ PUBLIC void MAP_Goalsize(int size)
 	}
 }
 
-PUBLIC void  MAP_makeReturnContourMap() 
+PUBLIC void  MAP_makeReturnContourMap(UCHAR uc_staX,UCHAR uc_staY)
 {
 	USHORT		x, y, i;		// ループ変数
 	UCHAR		uc_dase;		// 基準値
@@ -1231,6 +1231,8 @@ PUBLIC void  MAP_makeReturnContourMap()
 		uc_new = uc_dase + 1;
 		for (y = 0; y < MAP_Y_SIZE; y++) {
 			for (x = 0; x < MAP_X_SIZE; x++) {
+				if ((us_cmap[uc_staY][uc_staX] != MAP_SMAP_MAX_VAL - 1) && (us_cmap[uc_staY][uc_staX] + 2 < uc_new))break;
+
 				if (us_cmap[y][x] == uc_dase) {
 					uc_wallData = g_sysMap[y][x];
 					/* 探索走行 */
@@ -1365,9 +1367,9 @@ PUBLIC void Simu_searchGoal(
 			if ((us_cmap[my][mx] == 0)||((g_sysMap[uc_trgY][uc_trgX]&0xf0) == 0xf0)) {
 				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
 //				MAP_makeContourMap(uc_goalX, uc_goalX, en_type);//自己座標で処理終了するため全体マップ作成不能20191121
-				MAP_makeReturnContourMap();
+				MAP_makeReturnContourMap(uc_staX,uc_staY);
+				MAP_showcountLog();
 				Simu_searchCmdList(uc_staX, uc_staY, en_Head, uc_goalX, uc_goalX, &en_endDir);
-//				MAP_showcountLog();
 //				std::this_thread::sleep_for(std::chrono::milliseconds(500));
 				std::cout << "goal,temp\n";
 				uc_trgX = Return_X;
@@ -1386,7 +1388,7 @@ PUBLIC void Simu_searchGoal(
 			}
 		}
 		maze_show_search(en_Head, mx, my);//map表記
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+//		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		printf("mx%d,my%d\n", mx, my);
 	}
 	printf("mx%d,my%d\n", mx, my);
