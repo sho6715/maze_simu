@@ -38,7 +38,7 @@ int main()
 	maze_set.maze_show_trgt();
 	std::cout << "\n";
 	MAP_init();
-	MAP_Goalsize(9);
+	MAP_Goalsize(1);
 	
 	MAP_searchGoalKnown(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH);
 

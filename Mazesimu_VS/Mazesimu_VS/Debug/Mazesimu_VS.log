@@ -1,17 +1,10 @@
-﻿  Mazesimu_VS.cpp
-C:\mouse\maze_simu\maze_simu\Mazesimu_VS\Mazesimu_VS\typedefine.h(40,1): warning C4005: 'TRUE': マクロが再定義されました。
+﻿  search.cpp
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(40,1): warning C4005: 'TRUE': マクロが再定義されました。
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(75): message : 'TRUE' の以前の定義を確認してください
-C:\mouse\maze_simu\maze_simu\Mazesimu_VS\Mazesimu_VS\typedefine.h(41,1): warning C4005: 'FALSE': マクロが再定義されました。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(41,1): warning C4005: 'FALSE': マクロが再定義されました。
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(71): message : 'FALSE' の以前の定義を確認してください
-  search.cpp
-C:\mouse\maze_simu\maze_simu\Mazesimu_VS\Mazesimu_VS\Mazesimu_VS.cpp(16,18): warning C4101: 'en_endDir': ローカル変数は 1 度も使われていません。
-C:\mouse\maze_simu\maze_simu\Mazesimu_VS\Mazesimu_VS\typedefine.h(40,1): warning C4005: 'TRUE': マクロが再定義されました。
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(75): message : 'TRUE' の以前の定義を確認してください
-C:\mouse\maze_simu\maze_simu\Mazesimu_VS\Mazesimu_VS\typedefine.h(41,1): warning C4005: 'FALSE': マクロが再定義されました。
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(71): message : 'FALSE' の以前の定義を確認してください
-C:\mouse\maze_simu\maze_simu\Mazesimu_VS\Mazesimu_VS\search.cpp(91,8): warning C4101: 'uc_dummy': ローカル変数は 1 度も使われていません。
-C:\mouse\maze_simu\maze_simu\Mazesimu_VS\Mazesimu_VS\search.cpp(339,33): warning C4244: '=': 'USHORT' から 'CHAR' への変換です。データが失われる可能性があります。
-C:\mouse\maze_simu\maze_simu\Mazesimu_VS\Mazesimu_VS\search.cpp(703,10): warning C4477: 'printf' : 書式文字列 '%d' には、型 'int' の引数が必要ですが、可変個引数 1 は型 'enMAP_HEAD_DIR *' です
-  コードを生成中...
-C:\mouse\maze_simu\maze_simu\Mazesimu_VS\Mazesimu_VS\search.cpp(1049,23): warning C4305: '=': 'double' から 'FLOAT' へ切り詰めます。
-  Mazesimu_VS.vcxproj -> C:\mouse\maze_simu\maze_simu\Mazesimu_VS\Debug\Mazesimu_VS.exe
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(91,8): warning C4101: 'uc_dummy': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(339,33): warning C4244: '=': 'USHORT' から 'CHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(703,10): warning C4477: 'printf' : 書式文字列 '%d' には、型 'int' の引数が必要ですが、可変個引数 1 は型 'enMAP_HEAD_DIR *' です
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(1049,23): warning C4305: '=': 'double' から 'FLOAT' へ切り詰めます。
+  Mazesimu_VS.vcxproj -> D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Debug\Mazesimu_VS.exe

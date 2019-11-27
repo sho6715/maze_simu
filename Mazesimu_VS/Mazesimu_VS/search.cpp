@@ -74,7 +74,7 @@ typedef struct
 	BOOL	bl_Known;
 }stMAP_KNOWN;
 
-PRIVATE stMAP_KNOWN		st_known = { 1,FALSE };
+PRIVATE stMAP_KNOWN		st_known = { 0,FALSE };
 
 
 // *************************************************************************
@@ -1281,119 +1281,6 @@ PUBLIC void  MAP_makeReturnContourMap(UCHAR uc_staX,UCHAR uc_staY)
 
 }
 
-
-PUBLIC void Simu_searchGoal(
-	UCHAR 			uc_trgX, 		///< [in] 目標x座標
-	UCHAR 			uc_trgY, 		///< [in] 目標y座標 
-	enMAP_ACT_MODE 	en_type, 		///< [in] 探索方法
-	enSEARCH_MODE	en_search		///< [in] 探索方法
-) {
-	enMAP_HEAD_DIR	en_head = NORTH;
-	BOOL		bl_type = TRUE;			// 現在位置、FALSE: １区間前進状態、TURE:半区間前進状態
-	enMAP_HEAD_DIR		en_endDir;
-
-	UCHAR uc_goalX;
-	UCHAR uc_goalY;
-	UCHAR uc_staX;
-	UCHAR uc_staY;
-
-	if (en_search == SEARCH_RETURN){
-		uc_goalX = uc_trgX;
-		uc_goalY = uc_trgY;
-		uc_staX = mx;
-		uc_staY = my;
-		printf("mx%d,my%d\n", mx, my);
-		MAP_makeContourMap(uc_trgX, uc_trgY, en_type);
-		Simu_searchCmdList(uc_staX, uc_staY, en_Head, uc_goalX, uc_goalX, &en_endDir);
-		uc_trgX = Return_X;
-		uc_trgY = Return_Y;
-		printf("goalx%d,goaly%d\n", Return_X, Return_Y);
-		MAP_showcountLog();
-	}
-
-		/* 迷路探索 */
-	while (1) {
-		MAP_refMousePos(en_Head);								// 座標更新
-		MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
-		MAP_showcountLog();
-//		maze_show_search(en_Head,mx,my);//map表記
-		/* 超信地旋回探索 */
-		if (SEARCH_TURN == en_search) {
-
-			//			MAP_makeMapData();												// 壁データから迷路データを作成			← ここでデータ作成をミスっている
-			Simu_makeMapData();//壁用のプログラムを作成			
-			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);						// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
-
-			/* 次の区画へ移動 */
-//			if ((mx == uc_trgX) && (my == uc_trgY)) {
-			if (us_cmap[my][mx] == 0) {
-				std::cout << "goal!!\n";
-				MAP_actGoal();										// ゴール時の動作
-				break;
-			}
-			else {
-				//				MAP_moveNextBlock(en_head, &bl_type);				// 次の区画へ移動								← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
-				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
-			}
-		}
-		/* スラローム探索 */
-		else if (SEARCH_SURA == en_search) {
-
-			//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
-			Simu_makeMapData();
-			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);				// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
-
-			/* 次の区画へ移動 */
-//			if ((mx == uc_trgX) && (my == uc_trgY)) {
-			if (us_cmap[my][mx] == 0) {
-				std::cout << "goal!!\n";
-				MAP_actGoal();										// ゴール時の動作
-				break;
-			}
-			else {
-				//				MAP_moveNextBlock_Sura(en_head, &bl_type, FALSE);	// 次の区画へ移動						← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
-				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
-
-			}
-		}
-		/* 帰還探索 */
-		else if (SEARCH_RETURN == en_search) {
-			//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
-			Simu_makeMapData();
-			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);				
-
-			/* 次の区画へ移動 */
-//			if ((mx == uc_trgX) && (my == uc_trgY)) {
-			if ((us_cmap[my][mx] == 0)||((g_sysMap[uc_trgY][uc_trgX]&0xf0) == 0xf0)) {
-				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
-//				MAP_makeContourMap(uc_goalX, uc_goalX, en_type);//自己座標で処理終了するため全体マップ作成不能20191121
-				MAP_makeReturnContourMap(uc_staX,uc_staY);
-				MAP_showcountLog();
-				Simu_searchCmdList(uc_staX, uc_staY, en_Head, uc_goalX, uc_goalX, &en_endDir);
-//				std::this_thread::sleep_for(std::chrono::milliseconds(500));
-				std::cout << "goal,temp\n";
-				uc_trgX = Return_X;
-				uc_trgY = Return_Y;
-				printf("goalx%d,goaly%d\n", Return_X, Return_Y);
-				if ((mx == 0)&&(my == 0)){
-					MAP_actGoal();
-					std::cout << "goal!!\n";
-					break;
-				}
-			}
-			else {
-				//				MAP_moveNextBlock_Sura(en_head, &bl_type, FALSE);	// 次の区画へ移動						← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
-				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
-
-			}
-		}
-		maze_show_search(en_Head, mx, my);//map表記
-//		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		printf("mx%d,my%d\n", mx, my);
-	}
-	printf("mx%d,my%d\n", mx, my);
-}
-
 //TKRの既知区間を移植
 // *************************************************************************
 //   機能		： 進む区画方向が探索済みか未探索かを判定
@@ -1462,7 +1349,7 @@ PRIVATE BOOL MAP_KnownAcc(void) {
 // *************************************************************************/
 PRIVATE void MAP_moveNextBlock_acc(enMAP_HEAD_DIR en_head, BOOL* p_type)
 {
-	*p_type = TRUE;
+	*p_type = FALSE;
 //	f_MoveBackDist = 0;
 
 	/* 動作 */
@@ -1470,22 +1357,24 @@ PRIVATE void MAP_moveNextBlock_acc(enMAP_HEAD_DIR en_head, BOOL* p_type)
 
 		/* そのまま前進 */
 	case NORTH:
-		*p_type = FALSE;
-
+//		*p_type = FALSE;
+		printf("NORTH\n");
 		if (MAP_KnownAcc() == FALSE) {					// 次に進む区画が未探索のとき
-
-			if (st_known.uc_StrCnt <= 2) {
-//				MOT_goBlock_Const(1);					// 1区画の場合は等速のまま
+			if (st_known.bl_Known == TRUE){
+				if (st_known.uc_StrCnt < 2) {
+	//				MOT_goBlock_Const(1);					// 1区画の場合は等速のまま
+				}
+				else {
+	//				printf("NORTH\n");
+					printf("StrCnt%d\n", st_known.uc_StrCnt);
+					std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+	//				MOT_setTrgtSpeed(MAP_KNOWN_ACC_SPEED);									// 既知区間加速するときの目標速度	
+	//				MOT_goBlock_FinSpeed((FLOAT)(st_known.uc_StrCnt - 1), MAP_SEARCH_SPEED);				// n区画前進
+	//				MOT_setTrgtSpeed(MAP_SEARCH_SPEED);										// 目標速度をデフォルト値に戻す
+				}
 			}
-			else {
-				printf("NORTH\n");
-				printf("StrCnt%d\n", st_known.uc_StrCnt);
-				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-//				MOT_setTrgtSpeed(MAP_KNOWN_ACC_SPEED);									// 既知区間加速するときの目標速度	
-//				MOT_goBlock_FinSpeed((FLOAT)(st_known.uc_StrCnt - 1), MAP_SEARCH_SPEED);				// n区画前進
-//				MOT_setTrgtSpeed(MAP_SEARCH_SPEED);										// 目標速度をデフォルト値に戻す
-			}
-			st_known.uc_StrCnt = 1;
+//			MOT_goBlock_Const(1);
+			st_known.uc_StrCnt = 0;
 			st_known.bl_Known = FALSE;
 
 		}
@@ -1500,20 +1389,20 @@ PRIVATE void MAP_moveNextBlock_acc(enMAP_HEAD_DIR en_head, BOOL* p_type)
 
 		/* 右に旋回する */
 	case EAST:
-
+		printf("EAST\n");
 		if (st_known.bl_Known == TRUE) {		// 直線分を消化
-			if (st_known.uc_StrCnt <= 2) {
+			if (st_known.uc_StrCnt < 2) {
 //				MOT_goBlock_Const(1);					// 1区画の場合は等速のまま
 			}
 			else {
-				printf("EAST\n");
+//				printf("EAST\n");
 				printf("StrCnt%d\n", st_known.uc_StrCnt);
 				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 //				MOT_setTrgtSpeed(MAP_KNOWN_ACC_SPEED);									// 既知区間加速するときの目標速度	
 //				MOT_goBlock_FinSpeed((FLOAT)(st_known.uc_StrCnt - 1), MAP_SEARCH_SPEED);				// n区画前進
 //				MOT_setTrgtSpeed(MAP_SEARCH_SPEED);										// 目標速度をデフォルト値に戻す
 			}
-			st_known.uc_StrCnt = 1;		/////////////////////////////////////////
+			st_known.uc_StrCnt = 0;		/////////////////////////////////////////
 			st_known.bl_Known = FALSE;
 		}
 
@@ -1543,20 +1432,20 @@ PRIVATE void MAP_moveNextBlock_acc(enMAP_HEAD_DIR en_head, BOOL* p_type)
 
 		/* 左に旋回する */
 	case WEST:
-
+		printf("WEST\n");
 		if (st_known.bl_Known == TRUE) {		// 直線分を消化
-			if (st_known.uc_StrCnt <= 2) {
+			if (st_known.uc_StrCnt < 2) {
 //				MOT_goBlock_Const(1);					// 1区画の場合は等速のまま
 			}
 			else {
-				printf("WEST\n");
+//				printf("WEST\n");
 				printf("StrCnt%d\n", st_known.uc_StrCnt);
 				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 //				MOT_setTrgtSpeed(MAP_KNOWN_ACC_SPEED);									// 既知区間加速するときの目標速度	
 //				MOT_goBlock_FinSpeed((FLOAT)(st_known.uc_StrCnt - 1), MAP_SEARCH_SPEED);				// n区画前進
 //				MOT_setTrgtSpeed(MAP_SEARCH_SPEED);										// 目標速度をデフォルト値に戻す
 			}
-			st_known.uc_StrCnt = 1;			//////////////////////////////////////
+			st_known.uc_StrCnt = 0;			//////////////////////////////////////
 			st_known.bl_Known = FALSE;
 		}
 
@@ -1587,6 +1476,7 @@ PRIVATE void MAP_moveNextBlock_acc(enMAP_HEAD_DIR en_head, BOOL* p_type)
 
 		/* 反転して戻る */
 	case SOUTH:
+		printf("SOUTH\n");
 //		MOT_goBlock_FinSpeed(0.5, 0);			// 半区画前進
 //		TIME_wait(MAP_SLA_WAIT);
 //		MOT_turn(MOT_R180);									// 右180度旋回
@@ -1630,6 +1520,126 @@ PRIVATE void MAP_moveNextBlock_acc(enMAP_HEAD_DIR en_head, BOOL* p_type)
 #endif
 }
 
+PUBLIC void Simu_searchGoal(
+	UCHAR 			uc_trgX, 		///< [in] 目標x座標
+	UCHAR 			uc_trgY, 		///< [in] 目標y座標 
+	enMAP_ACT_MODE 	en_type, 		///< [in] 探索方法
+	enSEARCH_MODE	en_search		///< [in] 探索方法
+) {
+	enMAP_HEAD_DIR	en_head = NORTH;
+	BOOL		bl_type = TRUE;			// 現在位置、FALSE: １区間前進状態、TURE:半区間前進状態
+	enMAP_HEAD_DIR		en_endDir;
+
+	UCHAR uc_goalX;
+	UCHAR uc_goalY;
+	UCHAR uc_staX;
+	UCHAR uc_staY;
+
+	if (en_search == SEARCH_RETURN){
+		uc_goalX = uc_trgX;
+		uc_goalY = uc_trgY;
+		uc_staX = mx;
+		uc_staY = my;
+		printf("mx%d,my%d\n", mx, my);
+		MAP_makeContourMap(uc_trgX, uc_trgY, en_type);
+		Simu_searchCmdList(uc_staX, uc_staY, en_Head, uc_goalX, uc_goalX, &en_endDir);
+		uc_trgX = Return_X;
+		uc_trgY = Return_Y;
+		printf("goalx%d,goaly%d\n", Return_X, Return_Y);
+		MAP_showcountLog();
+	}
+
+		/* 迷路探索 */
+	while (1) {
+		MAP_refMousePos(en_Head);								// 座標更新
+//		MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+//		MAP_showcountLog();
+//		maze_show_search(en_Head,mx,my);//map表記
+		/* 超信地旋回探索 */
+		if (SEARCH_TURN == en_search) {
+			MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+			MAP_showcountLog();
+			//			MAP_makeMapData();												// 壁データから迷路データを作成			← ここでデータ作成をミスっている
+			Simu_makeMapData();//壁用のプログラムを作成			
+			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);						// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
+
+			/* 次の区画へ移動 */
+//			if ((mx == uc_trgX) && (my == uc_trgY)) {
+			if (us_cmap[my][mx] == 0) {
+				std::cout << "goal!!\n";
+				MAP_actGoal();										// ゴール時の動作
+				break;
+			}
+			else {
+				//				MAP_moveNextBlock(en_head, &bl_type);				// 次の区画へ移動								← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
+				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
+			}
+		}
+		/* スラローム探索 */
+		else if (SEARCH_SURA == en_search) {
+			MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+			MAP_showcountLog();
+			//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
+			if (st_known.bl_Known != TRUE) {
+	//			MAP_makeMapData();		// 壁データから迷路データを作成
+				Simu_makeMapData();
+	//			SPK_debug();
+			}
+			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);				// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
+
+			/* 次の区画へ移動 */
+//			if ((mx == uc_trgX) && (my == uc_trgY)) {
+			if (us_cmap[my][mx] == 0) {
+				std::cout << "goal!!\n";
+				MAP_actGoal();										// ゴール時の動作
+				break;
+			}
+			else {
+				//				MAP_moveNextBlock_Sura(en_head, &bl_type, FALSE);	// 次の区画へ移動						← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
+				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
+
+			}
+		}
+		/* 帰還探索 */
+		else if (SEARCH_RETURN == en_search) {
+
+//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
+			if (st_known.bl_Known != TRUE) {
+	//			MAP_makeMapData();		// 壁データから迷路データを作成
+				Simu_makeMapData();
+	//			SPK_debug();
+			}
+//			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);				
+
+			/* 次の区画へ移動 */
+			if ((us_cmap[my][mx] == 0) || ((g_sysMap[uc_trgY][uc_trgX] & 0xf0) == 0xf0)) {
+				if ((mx == 0) && (my == 0)) {
+					MAP_actGoal();
+					break;
+				}
+				//				MAP_moveNextBlock_Sura(en_head, &bl_type, FALSE);	// 次の区画へ移動
+				//				MAP_makeContourMap(uc_goalX, uc_goalX, en_type);//自己座標で処理終了するため全体マップ作成不能20191121
+				MAP_makeReturnContourMap(uc_staX, uc_staY);
+				Simu_searchCmdList(uc_staX, uc_staY, en_Head, uc_goalX, uc_goalX, &en_endDir);
+				uc_trgX = Return_X;
+				uc_trgY = Return_Y;
+				MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+				MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);
+				Simu_moveNextBlock(en_head, &bl_type);	// 次の区画へ移動
+			}
+			else {
+				MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+				MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);
+				Simu_moveNextBlock(en_head, &bl_type);	// 次の区画へ移動						← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
+
+			}
+		}
+		maze_show_search(en_Head, mx, my);//map表記
+//		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		printf("mx%d,my%d\n", mx, my);
+	}
+	printf("mx%d,my%d\n", mx, my);
+}
 
 // *************************************************************************
 //   機能		： 探索（既知区間加速）
@@ -1644,6 +1654,7 @@ PUBLIC void MAP_searchGoalKnown(UCHAR uc_trgX, UCHAR uc_trgY, enMAP_ACT_MODE en_
 {
 	enMAP_HEAD_DIR	en_head = NORTH;
 	BOOL			bl_type = TRUE;			// 現在位置、FALSE: １区間前進状態、TURE:半区間前進状態
+	int	c = 0;
 
 //	MOT_setTrgtSpeed(MAP_SEARCH_SPEED);		// 目標速度
 	//MOT_setNowSpeed(0.0f);
@@ -1679,7 +1690,11 @@ PUBLIC void MAP_searchGoalKnown(UCHAR uc_trgX, UCHAR uc_trgY, enMAP_ACT_MODE en_
 		if (st_known.bl_Known != TRUE) {
 //			MAP_makeMapData();		// 壁データから迷路データを作成
 			Simu_makeMapData();
+			c = 0;
 //			SPK_debug();
+		}
+		else {
+			printf("count %d", c++);
 		}
 
 		MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);			// 等高線MAP法で進行方向を算出
@@ -1703,6 +1718,6 @@ PUBLIC void MAP_searchGoalKnown(UCHAR uc_trgX, UCHAR uc_trgY, enMAP_ACT_MODE en_
 		}
 		maze_show_search(en_Head, mx, my);//map表記
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		printf("mx%d,my%d\n", mx, my);
+		printf("mx%d,my%d\n\n\n", mx, my);
 	}
 }
