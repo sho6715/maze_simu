@@ -14,12 +14,23 @@
 int main()
 {
 	enMAP_HEAD_DIR		en_endDir;
+/*	int x;
+	std::string ceil = "";
+
 	std::cout << "start\n";
+
+	ceil += "   ";
+	for (x = 0; x < MAP_X_SIZE; x++) {
+		ceil +="+---";
+	}
+	ceil += "+";
+	std::cout << ceil << std::endl;
+*/
 //	const std::string file_path = "../mazedata/16MM2017CX.maze";
 //	const std::string file_path = "../mazedata/16MM2018H_semi.maze";
-//	const std::string file_path = "../mazedata/32MM2018HX.maze";
+	const std::string file_path = "../mazedata/32MM2018HX.maze";
 //	const std::string file_path = "../mazedata/16MM2019H_East.maze";
-	const std::string file_path = "../mazedata/test20191125.maze";
+//	const std::string file_path = "../mazedata/test20191125.maze";
 
 	mazeC maze_set;
 	maze_set.readfile(file_path);
@@ -40,9 +51,9 @@ int main()
 	MAP_init();
 	MAP_Goalsize(1);
 	
-	MAP_searchGoalKnown(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH);
+//	MAP_searchGoalKnown(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH);
 
-//	Simu_searchGoal(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH, SEARCH_SURA);
+	Simu_searchGoal(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH, SEARCH_SURA);
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -50,15 +61,15 @@ int main()
 	MAP_Goalsize(1);
 //	MAP_makeContourMap(0, 0, SEARCH);
 //	MAP_showcountLog();
-	MAP_searchGoalKnown(0, 0, SEARCH);
+//	MAP_searchGoalKnown(0, 0, SEARCH);
 //	Simu_searchGoal( 0, 0, SEARCH, SEARCH_RETURN );
 
-
-/*	MAP_makeCmdList(0, 0, NORTH, goal_map_x, goal_map_y, &en_endDir);		// ドライブコマンド作成
+	MAP_Goalsize(1);
+	MAP_makeCmdList(0, 0, NORTH, maze_set.goal_map_x, maze_set.goal_map_y, &en_endDir);		// ドライブコマンド作成
 	MAP_makeSuraCmdList();													// スラロームコマンド作成
 	MAP_makeSkewCmdList();
 	MAP_showCmdLog();
-*/
+
 }
 
 // プログラムの実行: Ctrl + F5 または [デバッグ] > [デバッグなしで開始] メニュー

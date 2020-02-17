@@ -39,7 +39,7 @@ void direction_show(
 	char y,
 	char mx,
 	char my);
-void maze_show_search(enMAP_HEAD_DIR	en_head, char mx, char my);
+void maze_show_search(enMAP_HEAD_DIR	en_head, int mx, int my);
 
 
 #endif 

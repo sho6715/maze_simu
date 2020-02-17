@@ -120,58 +120,70 @@ void direction_show(
 	}
 }
 
-void maze_show_search(enMAP_HEAD_DIR en_head,char mx,char my)
+void maze_show_search(enMAP_HEAD_DIR en_head,int mx,int my)
 {
+//	system("cls");
+
 	SHORT	x, y;
 	CHAR	c_data;
-	printf("     ");
+	std::string wall_t = "";
+	std::string floor = "";
+	std::string wall = "";
+
 	for (x = 0; x < MAP_X_SIZE; x++) {
-		printf("+---");
+		wall_t += "+---";
 	}
-	printf("+\n\r");
+	wall_t += "+";
 
-	for (y = MAP_Y_SIZE *2-1; y >= 0; y--) {
-		if (y % 2 == 0) {
-			printf("     ");
-		}
-		else {
-			printf("   %2d", y/2);
-		}
-		for (x = 0; x < MAP_X_SIZE *2; x++) {
-			c_data = (UCHAR)g_sysMap[y/2][x/2];
-			if (y % 2 == 0) {
-				if (x % 2 == 0) {
-					if ((c_data & 0x04) == 0) {
-						printf("+   ");
-					}
-					else {
-						printf("+---");
-					}
-				}
+	for (y = MAP_Y_SIZE - 1; y >= 0; y--) {
+		floor = "";
+		wall = "";
+		for (x = 0; x < MAP_X_SIZE; x++) {
+			c_data = (UCHAR)g_sysMap[y][x];
+			if ((c_data & 0x08) == 0) {
+				floor += " ";
 			}
-
 			else {
-				if (x % 2 == 0) {
-					if ((c_data & 0x08) == 0) {
-						printf(" ");
-					}
-					else {
-						printf("|");
-					}
-				}
-				else {//ここに座標と方向をみて表記するプログラムを入れて実際には動かす
-					printf(" ");
-					direction_show(en_head,x/2,y/2,mx,my);
-					printf(" ");
+				floor += "|";
+			}
+			if ((x == mx) && (y == my)) {
+				switch (en_head) {
+
+				case NORTH:
+					floor += " ^ ";
+					break;
+				case EAST:
+					floor += " > ";
+					break;
+				case WEST:
+					floor += " < ";
+					break;
+				case SOUTH:
+					floor += " V ";
+					break;
+				default:
+					break;
 				}
 			}
+			else {
+				floor += "   ";
+			}
+			if ((c_data & 0x04) == 0) {
+				wall += "+   ";
+			}
+			else {
+				wall += "+---";
+			}
 		}
-		printf("|");
-
-		printf("\n\r");
+		floor += "|";
+		wall += "+";
+		if (y == MAP_Y_SIZE - 1) {
+			std::cout << wall_t << std::endl;
+		}
+		std::cout << floor << std::endl;
+		std::cout << wall << std::endl;
 	}
-
-	printf("     ");
+	std::cout << "mx " << mx << " my " << my << std::endl;
 
 }
 
