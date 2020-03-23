@@ -3,21 +3,17 @@ D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(40
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(75): message : 'TRUE' の以前の定義を確認してください
 D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(41,1): warning C4005: 'FALSE': マクロが再定義されました。
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(71): message : 'FALSE' の以前の定義を確認してください
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(92,8): warning C4101: 'uc_dummy': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(731,25): warning C4244: '引数': 'USHORT' から 'char' への変換です。データが失われる可能性があります。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(738,31): warning C4244: '引数': 'USHORT' から 'char' への変換です。データが失われる可能性があります。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(690,10): warning C4101: 'uc_dase': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(692,10): warning C4101: 'uc_level': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(689,13): warning C4101: 'y': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(689,10): warning C4101: 'x': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(693,9): warning C4101: 'uc_wallData': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(691,10): warning C4101: 'uc_new': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(822,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(832,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(840,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(850,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(775,10): warning C4101: 'uc_dase': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(777,10): warning C4101: 'uc_level': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(776,10): warning C4101: 'uc_new': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(1292,23): warning C4305: '=': 'double' から 'FLOAT' へ切り詰めます。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\queue.h(28,10): warning C4477: 'printf' : 書式文字列 '%d' には、型 'int' の引数が必要ですが、可変個引数 1 は型 'stPOSITION' です
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\queue.h(79,13): warning C4101: 'dqueue': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(93,8): warning C4101: 'uc_dummy': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(734,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(744,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(752,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(762,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(682,10): warning C4101: 'uc_dase': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(684,10): warning C4101: 'uc_level': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(683,10): warning C4101: 'uc_new': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(1204,23): warning C4305: '=': 'double' から 'FLOAT' へ切り詰めます。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(1713,24): warning C4101: 'end': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(1713,17): warning C4101: 'start': ローカル変数は 1 度も使われていません。
   Mazesimu_VS.vcxproj -> D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Debug\Mazesimu_VS.exe

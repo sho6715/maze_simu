@@ -14,10 +14,11 @@
 // インクルードファイル（include）
 //**************************************************
 #include "search.h"
+#include "queue.h"
 
 #include <chrono>
 #include <thread>
-#include <queue>		//キューを使うようにするため
+//#include <queue>		//キューを使うようにするため
 
 //**************************************************
 // 定義（define）
@@ -672,100 +673,6 @@ stPOSITION nextdirection(stPOSITION next, char i) {
 	return next;
 }
 
-// *************************************************************************
-//   機能		： 等高線マップを作成する 改良検討
-//   注意		： なし
-//   メモ		： なし
-//   引数		： なし
-//   返り値		： なし
-// **************************    履    歴    *******************************
-// 		v1.0		2018.09.27			sato		新規
-// *************************************************************************/
-PUBLIC void  MAP_makeContourMap_kai(
-	UCHAR uc_goalX, 			///< [in] ゴールX座標
-	UCHAR uc_goalY, 			///< [in] ゴールY座標
-	enMAP_ACT_MODE	en_type		///< [in] 計算方法（まだ未使用）
-) {
-	USHORT		x, y, i;		// ループ変数
-	USHORT		uc_dase;		// 基準値
-	USHORT		uc_new;			// 新値
-	USHORT		uc_level;		// 等高線
-	UCHAR		uc_wallData;	// 壁情報
-
-	stPOSITION		st_pos;
-
-	en_type = en_type;		// コンパイルワーニング回避（いずれ削除）
-
-	LARGE_INTEGER freq;
-	QueryPerformanceFrequency(&freq);
-	LARGE_INTEGER start, end;
-	QueryPerformanceCounter(&start);
-
-
-
-	/* 等高線マップを初期化する */
-	for (i = 0; i < MAP_SMAP_MAX_VAL; i++) {
-		us_cmap[i / MAP_Y_SIZE][i & (MAP_X_SIZE - 1)] = MAP_SMAP_MAX_VAL - 1;
-	}
-
-	/* ステップの更新予約のキュー */
-	std::queue<stPOSITION> q;
-
-	/* 目標地点の等高線を0に設定 */
-	setStep(uc_goalX, uc_goalY, 0);
-	st_pos.x = uc_goalX;
-	st_pos.y = uc_goalY;
-	st_pos.step = 0;
-	
-	q.push(st_pos);
-
-	/* 等高線マップを作成 */
-	while (!q.empty()) {
-		const auto focus = q.front();
-		q.pop();
-		const auto focus_step = focus.step;
-
-		for (i = 0; i < 4; i++) {
-			auto next = focus;
-			//進行方向の壁の有無を確認したい
-			if (wallcheck(focus, i) == FALSE)
-				continue;
-//			if (next.x > max_x || next.y > max_y || next.x < min_x ||
-//			next.y < min_y)
-//			break; /*< 計算を高速化するため展開範囲を制限 */
-			if (next.x > MAP_X_SIZE + 1 || next.y > MAP_Y_SIZE + 1 || next.x < -1 || next.y < -1)
-				continue; /* 区画外に出ないように(上のが使えるならいらないので上のコメントアウトと入れ替え */
-			next = nextdirection(next, i);
-			//ステップ算出（現在1のみ
-			const auto next_step = focus_step + 1;
-			if (us_cmap[next.y][next.x] <= next_step)
-				continue;                  /*< 更新の必要がない */
-			next.step = next_step;
-			setStep(next.x, next.y, next_step); /*< 更新 */
-			q.push(next); /*< 再帰的に更新され得るのでキューにプッシュ */
-		}
-	}
-
-
-
-		QueryPerformanceCounter(&end);
-
-		double time = static_cast<double>(end.QuadPart - start.QuadPart) * 1000.0 / freq.QuadPart;
-		printf("time %lf[ms]\n", time);
-
-#if 0
-	/* debug */
-	for (x = 0; x < 4; x++) {
-
-		for (y = 0; y < 4; y++) {
-			us_Log[y][x][us_LogPt] = us_cmap[y][x];
-		}
-	}
-	us_LogPt++;
-#endif
-
-}
-
 PUBLIC void  MAP_makeContourMap_kai2(
 	UCHAR uc_goalX, 			///< [in] ゴールX座標
 	UCHAR uc_goalY, 			///< [in] ゴールY座標
@@ -781,6 +688,11 @@ PUBLIC void  MAP_makeContourMap_kai2(
 
 	en_type = en_type;		// コンパイルワーニング回避（いずれ削除）
 
+	queue_t queue;
+	queue_t* pQueue = &queue;
+
+	initQueue(pQueue);
+
 	LARGE_INTEGER freq;
 	QueryPerformanceFrequency(&freq);
 	LARGE_INTEGER start, end;
@@ -794,7 +706,7 @@ PUBLIC void  MAP_makeContourMap_kai2(
 	}
 
 	/* ステップの更新予約のキュー */
-	std::queue<stPOSITION> q;
+//	std::queue<stPOSITION> q;
 //	QueryPerformanceCounter(&start);
 
 	/* 目標地点の等高線を0に設定 */
@@ -803,12 +715,12 @@ PUBLIC void  MAP_makeContourMap_kai2(
 	st_pos.y = uc_goalY;
 	st_pos.step = 0;
 
-	q.push(st_pos);
+	enqueue(pQueue,st_pos);
 
 	/* 等高線マップを作成 */
-	while (!q.empty()) {
-		const auto focus = q.front();
-		q.pop();
+	while (pQueue->flag != EMPTY) {
+		const auto focus = dequeue(pQueue);
+//		q.pop();
 		const auto focus_step = focus.step;
 		x = focus.x;
 		y = focus.y;
@@ -821,7 +733,7 @@ PUBLIC void  MAP_makeContourMap_kai2(
 				us_cmap[y + 1][x] = focus_step + 1;
 				next.x = x;
 				next.y = y + 1;
-				q.push(next);
+				enqueue(pQueue,next);
 			}
 		}
 		if (((uc_wallData & 0x02) == 0x00) && (x != (MAP_X_SIZE - 1))) {
@@ -830,7 +742,7 @@ PUBLIC void  MAP_makeContourMap_kai2(
 				us_cmap[y][x + 1] = focus_step + 1;
 				next.x = x + 1;
 				next.y = y;
-				q.push(next);
+				enqueue(pQueue, next);
 			}
 		}
 		if (((uc_wallData & 0x04) == 0x00) && (y != 0)) {
@@ -839,7 +751,7 @@ PUBLIC void  MAP_makeContourMap_kai2(
 				us_cmap[y - 1][x] = focus_step + 1;
 				next.x = x;
 				next.y = y - 1;
-				q.push(next);
+				enqueue(pQueue, next);
 			}
 		}
 		if (((uc_wallData & 0x08) == 0x00) && (x != 0)) {
@@ -848,7 +760,7 @@ PUBLIC void  MAP_makeContourMap_kai2(
 				us_cmap[y][x - 1] = focus_step + 1;
 				next.x = x - 1;
 				next.y = y;
-				q.push(next);
+				enqueue(pQueue, next);
 			}
 		}
 
@@ -1799,7 +1711,7 @@ PUBLIC void Simu_searchGoal(
 		LARGE_INTEGER freq;
 		QueryPerformanceFrequency(&freq);
 		LARGE_INTEGER start, end;
-		QueryPerformanceCounter(&start);
+//		QueryPerformanceCounter(&start);
 
 		MAP_refMousePos(en_Head);								// 座標更新
 		printf("mx%d,my%d\n", mx, my);
@@ -1828,8 +1740,8 @@ PUBLIC void Simu_searchGoal(
 		}
 		/* スラローム探索 */
 		else if (SEARCH_SURA == en_search) {
-//			MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
-			MAP_makeContourMap_kai2(uc_trgX, uc_trgY, en_type);
+			MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+//			MAP_makeContourMap_kai2(uc_trgX, uc_trgY, en_type);
 //			MAP_showcountLog();
 			//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
 			if (st_known.bl_Known != TRUE) {
@@ -1884,10 +1796,10 @@ PUBLIC void Simu_searchGoal(
 			}
 		}
 
-		QueryPerformanceCounter(&end);
+//		QueryPerformanceCounter(&end);
 
-		double time = static_cast<double>(end.QuadPart - start.QuadPart) * 1000.0 / freq.QuadPart;
-		printf("time %lf[ms]\n", time);
+//		double time = static_cast<double>(end.QuadPart - start.QuadPart) * 1000.0 / freq.QuadPart;
+//		printf("time %lf[ms]\n", time);
 
 		maze_show_search(en_Head, mx, my);//map表記
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
