@@ -416,6 +416,11 @@ PUBLIC void MAP_makeCmdList(
 	/* 迷路情報からコマンド作成 */
 	while (1) {
 		us_high = us_cmap[uc_staY][uc_staX] - 1;
+
+		if ((uc_staX == uc_endX) && (uc_staY == uc_endY)) {
+			break;
+		}
+		
 		if (en_staDir == NORTH) {
 			if (((g_sysMap[uc_staY][uc_staX] & 0x11) == 0x10) && (us_cmap[uc_staY + 1][uc_staX] == us_high)) en_nowDir = NORTH;
 			else if (((g_sysMap[uc_staY][uc_staX] & 0x22) == 0x20) && (us_cmap[uc_staY][uc_staX + 1] == us_high)) en_nowDir = EAST;
@@ -476,9 +481,12 @@ PUBLIC void MAP_makeCmdList(
 		else if (en_nowDir == WEST) uc_staX = uc_staX - 1;
 
 		en_staDir = en_nowDir;
-
-//		if ((uc_staX == uc_endX) && (uc_staY == uc_endY)) break;
-		if (us_cmap[uc_staY][uc_staX] == 0) break;
+/*
+		if ((uc_staX == uc_endX) && (uc_staY == uc_endY)) {
+			break;
+		}
+*/
+//		if (us_cmap[uc_staY][uc_staX] == 0) break;
 	}
 
 	/* 超地信旋回用のコマンドリスト作成 */
@@ -1029,9 +1037,17 @@ PUBLIC void Simu_searchCmdList(
 	/* 迷路情報からコマンド作成 */
 	while (1) {
 		us_high = us_cmap[uc_staY][uc_staX] - 1;
+		printf("cmd high %d\n", us_high);
+//		if(us_high == 65535)break;
 		if ((g_sysMap[uc_staY][uc_staX]&0xf0) != 0xf0){
 			Return_X = uc_staX;
 			Return_Y = uc_staY;
+			break;
+		}
+
+		if (us_cmap[uc_staY][uc_staX] == 0) {
+			Return_X = 0;
+			Return_Y = 0;
 			break;
 		}
 
@@ -1073,14 +1089,128 @@ PUBLIC void Simu_searchCmdList(
 		else if (en_nowDir == WEST) uc_staX = uc_staX - 1;
 
 		en_staDir = en_nowDir;
-
-//		if ((uc_staX == uc_endX) && (uc_staY == uc_endY)) break;
-		if (us_cmap[uc_staY][uc_staX] == 0) {
+		printf("search x %d y %d\n", uc_staX,uc_staY);
+/*
+		if ((uc_staX == uc_endX) && (uc_staY == uc_endY)){
 			Return_X = 0;
 			Return_Y = 0;
 			break;
 		}
+*/
 	}
+
+
+	/* 最終的に向いている方向 */
+	*en_endDir = en_staDir;
+
+#if 0
+	/* debug */
+	for (i = 0; i < us_totalCmd; i++) {
+		printf("dcom[%4d] = %02d  \n\r", i, dcom[i]);
+	}
+#endif
+}
+
+PUBLIC void MAP_makeCmdList_dijkstra(
+	UCHAR uc_staX,					///< [in] 開始X座標
+	UCHAR uc_staY,					///< [in] 開始Y座標
+	enMAP_HEAD_DIR en_staDir,		///< [in] 開始時の方向
+	UCHAR uc_endX,					///< [in] 終了X座標
+	UCHAR uc_endY,					///< [in] 終了Y座標
+	enMAP_HEAD_DIR* en_endDir		///< [out] 終了時の方向
+) {
+	UCHAR			uc_goStep;									// 前進のステップ数
+	USHORT			us_high;									// 等高線の高さ
+	USHORT			us_pt;										// コマンドポインタ
+	enMAP_HEAD_DIR	en_nowDir;									// 現在マウスの向いている絶対方向
+	enMAP_HEAD_DIR	en_tempDir;									// 相対方向
+//	USHORT			i;											// roop
+
+	/* 前進ステップ数を初期化する */
+	uc_goStep = 0;
+	us_pt = 0;
+
+	/* 迷路情報からコマンド作成 */
+	while (1) {
+		us_high = us_cmap[uc_staY][uc_staX];
+
+		if ((uc_staX == uc_endX) && (uc_staY == uc_endY)) {
+			break;
+		}
+		
+		if (en_staDir == NORTH) {
+			if (((g_sysMap[uc_staY][uc_staX] & 0x11) == 0x10) && (us_cmap[uc_staY + 1][uc_staX] < us_high)) en_nowDir = NORTH;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x22) == 0x20) && (us_cmap[uc_staY][uc_staX + 1] < us_high)) en_nowDir = EAST;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x88) == 0x80) && (us_cmap[uc_staY][uc_staX - 1] < us_high)) en_nowDir = WEST;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x44) == 0x40) && (us_cmap[uc_staY - 1][uc_staX] < us_high)) en_nowDir = SOUTH;
+			else   while (1);
+		}
+		else if (en_staDir == EAST) {
+			if (((g_sysMap[uc_staY][uc_staX] & 0x22) == 0x20) && (us_cmap[uc_staY][uc_staX + 1] < us_high)) en_nowDir = EAST;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x11) == 0x10) && (us_cmap[uc_staY + 1][uc_staX] < us_high)) en_nowDir = NORTH;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x44) == 0x40) && (us_cmap[uc_staY - 1][uc_staX] < us_high)) en_nowDir = SOUTH;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x88) == 0x80) && (us_cmap[uc_staY][uc_staX - 1] < us_high)) en_nowDir = WEST;
+			else   while (1);
+		}
+		else if (en_staDir == SOUTH) {
+			if (((g_sysMap[uc_staY][uc_staX] & 0x44) == 0x40) && (us_cmap[uc_staY - 1][uc_staX] < us_high)) en_nowDir = SOUTH;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x22) == 0x20) && (us_cmap[uc_staY][uc_staX + 1] < us_high)) en_nowDir = EAST;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x88) == 0x80) && (us_cmap[uc_staY][uc_staX - 1] < us_high)) en_nowDir = WEST;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x11) == 0x10) && (us_cmap[uc_staY + 1][uc_staX] < us_high)) en_nowDir = NORTH;
+			else   while (1);
+		}
+		else if (en_staDir == WEST) {
+			if (((g_sysMap[uc_staY][uc_staX] & 0x88) == 0x80) && (us_cmap[uc_staY][uc_staX - 1] < us_high)) en_nowDir = WEST;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x11) == 0x10) && (us_cmap[uc_staY + 1][uc_staX] < us_high)) en_nowDir = NORTH;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x44) == 0x40) && (us_cmap[uc_staY - 1][uc_staX] < us_high)) en_nowDir = SOUTH;
+			else if (((g_sysMap[uc_staY][uc_staX] & 0x22) == 0x20) && (us_cmap[uc_staY][uc_staX + 1] < us_high)) en_nowDir = EAST;
+			else   while (1);
+		}
+
+		en_tempDir = (enMAP_HEAD_DIR)((en_nowDir - en_staDir) & (enMAP_HEAD_DIR)3);		// 方向更新
+		en_staDir = en_nowDir;
+
+		if (en_tempDir == NORTH) {
+			uc_goStep = uc_goStep + 2;
+		}
+		else if (en_tempDir == EAST) {
+			dcom[us_pt] = uc_goStep;
+			dcom[++us_pt] = R90;
+			uc_goStep = 2;
+			us_pt++;
+		}
+		else if (en_tempDir == WEST) {
+			dcom[us_pt] = uc_goStep;
+			dcom[++us_pt] = L90;
+			uc_goStep = 2;
+			us_pt++;
+		}
+		else {
+			dcom[us_pt] = uc_goStep;
+			dcom[++us_pt] = R180;
+			uc_goStep = 2;
+			us_pt++;
+		}
+
+		if (en_nowDir == NORTH) uc_staY = uc_staY + 1;
+		else if (en_nowDir == EAST) uc_staX = uc_staX + 1;
+		else if (en_nowDir == SOUTH) uc_staY = uc_staY - 1;
+		else if (en_nowDir == WEST) uc_staX = uc_staX - 1;
+
+		en_staDir = en_nowDir;
+/*
+		if ((uc_staX == uc_endX) && (uc_staY == uc_endY)) {
+			break;
+		}
+*/
+//		if (us_cmap[uc_staY][uc_staX] == 0) break;
+	}
+
+	/* 超地信旋回用のコマンドリスト作成 */
+	dcom[us_pt] = uc_goStep;
+	dcom[++us_pt] = STOP;
+	dcom[++us_pt] = CEND;
+	us_totalCmd = us_pt + 1;			// コマンド総数
 
 
 	/* 最終的に向いている方向 */

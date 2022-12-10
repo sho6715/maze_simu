@@ -6,6 +6,7 @@ typedef struct {
 	uint8_t		x;
 	uint8_t		y;
 	uint16_t	step;
+	uint8_t		direction;	//north,northeast,east,southeast,south,southwest,west,northwest
 }stPOSITION;
 
 enum status {

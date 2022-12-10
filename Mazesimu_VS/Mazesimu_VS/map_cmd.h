@@ -252,5 +252,14 @@ PUBLIC void Simu_searchCmdList(
 	enMAP_HEAD_DIR* en_endDir		///< [out] 終了時の方向
 );
 
+PUBLIC void MAP_makeCmdList_dijkstra(
+	UCHAR uc_staX,					///< [in] 開始X座標
+	UCHAR uc_staY,					///< [in] 開始Y座標
+	enMAP_HEAD_DIR en_staDir,		///< [in] 開始時の方向
+	UCHAR uc_endX,					///< [in] 終了X座標
+	UCHAR uc_endY,					///< [in] 終了Y座標
+	enMAP_HEAD_DIR* en_endDir		///< [out] 終了時の方向
+);
+
 
 #endif

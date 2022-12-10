@@ -31,6 +31,7 @@ int main()
 	const std::string file_path = "../mazedata/32MM2018HX.maze";
 //	const std::string file_path = "../mazedata/16MM2019H_East.maze";
 //	const std::string file_path = "../mazedata/test20191125.maze";
+//	const std::string file_path = "../mazedata/32MM2012HX.maze";
 
 	mazeC maze_set;
 	maze_set.readfile(file_path);
@@ -59,17 +60,29 @@ int main()
 
 	std::cout<<"RETURN_START\n";
 	MAP_Goalsize(1);
-//	MAP_makeContourMap(0, 0, SEARCH);
-//	MAP_showcountLog();
-//	MAP_searchGoalKnown(0, 0, SEARCH);
-//	Simu_searchGoal( 0, 0, SEARCH, SEARCH_RETURN );
+	MAP_makeContourMap(0, 0, SEARCH);
+	MAP_showcountLog();
+	MAP_searchGoalKnown(0, 0, SEARCH);
+	Simu_searchGoal( 0, 0, SEARCH, SEARCH_RETURN );
 
+	MAP_Goal_init();
+	MAP_makeContourMap(maze_set.goal_map_x, maze_set.goal_map_y, BEST_WAY);
+	MAP_showcountLog();
 	MAP_Goalsize(1);
 	MAP_makeCmdList(0, 0, NORTH, maze_set.goal_map_x, maze_set.goal_map_y, &en_endDir);		// ドライブコマンド作成
 	MAP_makeSuraCmdList();													// スラロームコマンド作成
 	MAP_makeSkewCmdList();
 	MAP_showCmdLog();
-
+	printf("\n\ndijkstra\n");
+	MAP_Goal_init();
+	MAP_makeContourMap_dijkstra(maze_set.goal_map_x, maze_set.goal_map_y, BEST_WAY);
+	MAP_showcountLog();
+	MAP_Goalsize(1);
+	
+	MAP_makeCmdList_dijkstra(0, 0, NORTH, maze_set.goal_map_x, maze_set.goal_map_y, &en_endDir);		// ドライブコマンド作成
+	MAP_makeSuraCmdList();													// スラロームコマンド作成
+	MAP_makeSkewCmdList();
+	MAP_showCmdLog();
 }
 
 // プログラムの実行: Ctrl + F5 または [デバッグ] > [デバッグなしで開始] メニュー

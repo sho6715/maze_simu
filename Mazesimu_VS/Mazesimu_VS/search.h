@@ -82,6 +82,7 @@ typedef enum {
 //**************************************************
 extern PUBLIC UCHAR		g_sysMap[MAP_Y_SIZE][MAP_X_SIZE];		///< 迷路情報
 extern PUBLIC USHORT	us_cmap[MAP_Y_SIZE][MAP_X_SIZE];		///< 等高線 データ
+extern PUBLIC UCHAR		g_Map_direction[MAP_Y_SIZE][MAP_X_SIZE];
 
 extern PUBLIC UCHAR		GOAL_MAP_X;					//ゴール座標変更プログラム用ｘ
 extern PUBLIC UCHAR		GOAL_MAP_Y;					//ゴール座標変更プログラム用ｙ
@@ -98,6 +99,8 @@ PUBLIC void MAP_clearMap(void);
 PUBLIC void MAP_setPos(UCHAR uc_x, UCHAR uc_y, enMAP_HEAD_DIR en_dir);
 PUBLIC void MAP_searchGoal(UCHAR uc_trgX, UCHAR uc_trgY, enMAP_ACT_MODE en_type, enSEARCH_MODE en_search);
 PUBLIC void MAP_makeContourMap(UCHAR uc_goalX, UCHAR uc_goalY, enMAP_ACT_MODE en_type);
+PUBLIC void MAP_makeContourMap_kai2(UCHAR uc_goalX, UCHAR uc_goalY, enMAP_ACT_MODE en_type);
+PUBLIC void MAP_makeContourMap_dijkstra(UCHAR uc_goalX, UCHAR uc_goalY, enMAP_ACT_MODE en_type);
 PUBLIC void MAP_actGoalLED(void);
 
 PUBLIC void MAP_ClearMapData(void);

@@ -1,19 +1,47 @@
-﻿  search.cpp
+﻿  Maze.cpp
 D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(40,1): warning C4005: 'TRUE': マクロが再定義されました。
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(75): message : 'TRUE' の以前の定義を確認してください
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(75): message : 'TRUE' の以前の定義を確認してください
 D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(41,1): warning C4005: 'FALSE': マクロが再定義されました。
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(71): message : 'FALSE' の以前の定義を確認してください
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\queue.h(28,10): warning C4477: 'printf' : 書式文字列 '%d' には、型 'int' の引数が必要ですが、可変個引数 1 は型 'stPOSITION' です
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\queue.h(79,13): warning C4101: 'dqueue': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(93,8): warning C4101: 'uc_dummy': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(734,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(744,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(752,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(762,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(682,10): warning C4101: 'uc_dase': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(684,10): warning C4101: 'uc_level': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(683,10): warning C4101: 'uc_new': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(1204,23): warning C4305: '=': 'double' から 'FLOAT' へ切り詰めます。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(1713,24): warning C4101: 'end': ローカル変数は 1 度も使われていません。
-D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(1713,17): warning C4101: 'start': ローカル変数は 1 度も使われていません。
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(71): message : 'FALSE' の以前の定義を確認してください
+  Mazesimu_VS.cpp
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(40,1): warning C4005: 'TRUE': マクロが再定義されました。
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(75): message : 'TRUE' の以前の定義を確認してください
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(41,1): warning C4005: 'FALSE': マクロが再定義されました。
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(71): message : 'FALSE' の以前の定義を確認してください
+  map_cmd.cpp
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(40,1): warning C4005: 'TRUE': マクロが再定義されました。
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(75): message : 'TRUE' の以前の定義を確認してください
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(41,1): warning C4005: 'FALSE': マクロが再定義されました。
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(71): message : 'FALSE' の以前の定義を確認してください
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(569,25): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(638,33): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(662,33): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(671,19): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(679,19): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(687,19): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(697,19): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(708,19): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(717,19): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(727,34): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(736,34): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\map_cmd.cpp(804,32): warning C4244: '=': 'USHORT' から 'UCHAR' への変換です。データが失われる可能性があります。
+  search.cpp
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(40,1): warning C4005: 'TRUE': マクロが再定義されました。
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(75): message : 'TRUE' の以前の定義を確認してください
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\typedefine.h(41,1): warning C4005: 'FALSE': マクロが再定義されました。
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(71): message : 'FALSE' の以前の定義を確認してください
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\queue.h(29,10): warning C4477: 'printf' : 書式文字列 '%d' には、型 'int' の引数が必要ですが、可変個引数 1 は型 'stPOSITION' です
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\queue.h(80,13): warning C4101: 'dqueue': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(94,8): warning C4101: 'uc_dummy': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(735,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(745,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(753,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(763,14): warning C4244: '=': 'USHORT' から 'uint8_t' への変換です。データが失われる可能性があります。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(683,10): warning C4101: 'uc_dase': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(685,10): warning C4101: 'uc_level': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(684,10): warning C4101: 'uc_new': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(1385,23): warning C4305: '=': 'double' から 'FLOAT' へ切り詰めます。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(1894,24): warning C4101: 'end': ローカル変数は 1 度も使われていません。
+D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Mazesimu_VS\search.cpp(1894,17): warning C4101: 'start': ローカル変数は 1 度も使われていません。
+  コードを生成中...
   Mazesimu_VS.vcxproj -> D:\電気研究会\github\maze_fucchi_VS\Mazesimu_VS\Debug\Mazesimu_VS.exe

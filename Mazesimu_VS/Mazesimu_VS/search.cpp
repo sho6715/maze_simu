@@ -47,6 +47,7 @@ PRIVATE UCHAR		my;												///< マウスのＸ座標
 PRIVATE UCHAR		mx;												///< マウスのＹ座標
 PUBLIC USHORT		us_cmap[MAP_Y_SIZE][MAP_X_SIZE];				///< 等高線 データ
 PUBLIC UCHAR		g_sysMap[MAP_Y_SIZE][MAP_X_SIZE];			///< 迷路情報
+PUBLIC UCHAR		g_Map_direction[MAP_Y_SIZE][MAP_X_SIZE];			///< 迷路情報
 PRIVATE FLOAT		f_MoveBackDist;									///< 壁当て動作で後退した距離[区画]
 PRIVATE UCHAR		uc_SlaCnt = 0;									// スラローム連続回数
 PRIVATE UCHAR		uc_back[MAP_Y_SIZE][MAP_X_SIZE];			// 迷路データ
@@ -785,6 +786,186 @@ PUBLIC void  MAP_makeContourMap_kai2(
 #endif
 }
 
+PUBLIC void MAP_clearMap_direction(void)
+{
+	USHORT	x, y;
+	UCHAR	uc_data;
+
+	/* すべてのマップデータを未探索状態にする */
+	for (y = 0; y < MAP_Y_SIZE; y++) {
+		for (x = 0; x < MAP_X_SIZE; x++) {
+			uc_data = 0x00;
+			g_Map_direction[y][x] = uc_data;
+		}
+	}
+
+}
+
+PUBLIC void  MAP_makeContourMap_dijkstra(
+	UCHAR uc_goalX, 			///< [in] ゴールX座標
+	UCHAR uc_goalY, 			///< [in] ゴールY座標
+	enMAP_ACT_MODE	en_type		///< [in] 計算方法（まだ未使用）
+) {
+	USHORT		x, y, i;		// ループ変数
+	USHORT		uc_dase;		// 基準値
+	USHORT		uc_new;			// 新値
+	USHORT		uc_level;		// 等高線
+	UCHAR		uc_wallData;	// 壁情報
+
+	en_type = en_type;		// コンパイルワーニング回避（いずれ削除）
+
+	LARGE_INTEGER freq;
+	QueryPerformanceFrequency(&freq);
+	LARGE_INTEGER start, end;
+
+	QueryPerformanceCounter(&start);
+	MAP_clearMap_direction();
+
+	/* 等高線マップを初期化する */
+	for (i = 0; i < MAP_SMAP_MAX_VAL; i++) {
+		us_cmap[i / MAP_Y_SIZE][i & (MAP_X_SIZE - 1)] = MAP_SMAP_MAX_VAL*4 - 1;
+	}
+//	QueryPerformanceCounter(&start);
+	/* 目標地点の等高線を0に設定 */
+	us_cmap[uc_goalY][uc_goalX] = 0;
+	if (GOAL_SIZE == 4) {
+		us_cmap[uc_goalY + 1][uc_goalX] = 0;
+		us_cmap[uc_goalY][uc_goalX + 1] = 0;
+		us_cmap[uc_goalY + 1][uc_goalX + 1] = 0;
+	}
+	else if (GOAL_SIZE == 9){
+		us_cmap[uc_goalY+1][uc_goalX] = 0;
+		us_cmap[uc_goalY][uc_goalX+1] = 0;
+		us_cmap[uc_goalY+1][uc_goalX+1] = 0;
+		us_cmap[uc_goalY+2][uc_goalX] = 0;
+		us_cmap[uc_goalY+2][uc_goalX+1] = 0;
+		us_cmap[uc_goalY][uc_goalX+2] = 0;
+		us_cmap[uc_goalY+1][uc_goalX+2] = 0;
+		us_cmap[uc_goalY+2][uc_goalX+2] = 0;
+	}
+
+	if (mx > uc_max_x)uc_max_x = mx;
+	if (my > uc_max_y)uc_max_y = my;
+	uc_max_x = 32;
+	uc_max_y = 32;
+
+	g_Map_direction[uc_goalY][uc_goalX] = 0xff;
+
+	/* 等高線マップを作成 */
+	uc_dase = 0;
+	do {
+		uc_level = 0;
+		uc_new = uc_dase + 1;
+		for (y = 0; y < MAP_Y_SIZE; y++) {
+			if (uc_max_y+1 < y) break;
+			for (x = 0; x < MAP_X_SIZE; x++) {
+				if (us_cmap[y][x] == uc_dase) {
+					uc_wallData = g_sysMap[y][x];
+					if (uc_max_x+1 < x) break;
+					/* 探索走行 */
+					if (SEARCH == en_type) {
+						if (((uc_wallData & 0x01) == 0x00) && (y != (MAP_Y_SIZE - 1))) {
+							if (us_cmap[y + 1][x] == MAP_SMAP_MAX_VAL - 1) {
+								us_cmap[y + 1][x] = uc_new;
+								uc_level++;
+							}
+						}
+						if (((uc_wallData & 0x02) == 0x00) && (x != (MAP_X_SIZE - 1))) {
+							if (us_cmap[y][x + 1] == MAP_SMAP_MAX_VAL - 1) {
+								us_cmap[y][x + 1] = uc_new;
+								uc_level++;
+							}
+						}
+						if (((uc_wallData & 0x04) == 0x00) && (y != 0)) {
+							if (us_cmap[y - 1][x] == MAP_SMAP_MAX_VAL - 1) {
+								us_cmap[y - 1][x] = uc_new;
+								uc_level++;
+							}
+						}
+						if (((uc_wallData & 0x08) == 0x00) && (x != 0)) {
+							if (us_cmap[y][x - 1] == MAP_SMAP_MAX_VAL - 1) {
+								us_cmap[y][x - 1] = uc_new;
+								uc_level++;
+							}
+						}
+					}
+					/* 最短走行 */
+					else {
+						if (((uc_wallData & 0x11) == 0x10) && (y != (MAP_Y_SIZE - 1))) {
+							if((g_Map_direction[y][x]&0x10) == 0x10){
+								uc_new = uc_dase + 1;
+							}else{
+								uc_new = uc_dase + 2;
+							}
+							if (us_cmap[y + 1][x] > uc_new) {
+								us_cmap[y + 1][x] = uc_new;
+								g_Map_direction[y+1][x] |= 0x10;
+								uc_level++;
+							}
+						}
+						if (((uc_wallData & 0x22) == 0x20) && (x != (MAP_X_SIZE - 1))) {
+							if((g_Map_direction[y][x]&0x40) == 0x40){
+								uc_new = uc_dase + 1;
+							}else{
+								uc_new = uc_dase + 2;
+							}
+							if (us_cmap[y][x + 1] > uc_new) {
+								us_cmap[y][x + 1] = uc_new;
+								g_Map_direction[y][x+1] |= 0x40;
+								uc_level++;
+							}
+						}
+						if (((uc_wallData & 0x44) == 0x40) && (y != 0)) {
+							if((g_Map_direction[y][x]&0x01) == 0x01){
+								uc_new = uc_dase + 1;
+							}else{
+								uc_new = uc_dase + 2;
+							}
+							if (us_cmap[y - 1][x] > uc_new) {
+								us_cmap[y - 1][x] = uc_new;
+								g_Map_direction[y-1][x] |= 0x01;
+								uc_level++;
+							}
+						}
+						if (((uc_wallData & 0x88) == 0x80) && (x != 0)) {
+							if((g_Map_direction[y][x]&0x04) == 0x04){
+								uc_new = uc_dase + 1;
+							}else{
+								uc_new = uc_dase + 2;
+							}
+							if (us_cmap[y][x - 1] > uc_new) {
+								us_cmap[y][x - 1] = uc_new;
+								g_Map_direction[y][x-1] |= 0x04;
+								uc_level++;
+							}
+						}
+					}
+				}
+				if(uc_dase != 4095)uc_level++;
+			}
+		}
+		uc_dase = uc_dase + 1;
+	} while (uc_level != 0);
+
+
+	QueryPerformanceCounter(&end);
+
+	double time = static_cast<double>(end.QuadPart - start.QuadPart) * 1000.0 / freq.QuadPart;
+	printf("time %lf[ms]\n", time);
+
+#if 0
+	/* debug */
+	for (x = 0; x < 4; x++) {
+
+		for (y = 0; y < 4; y++) {
+			us_Log[y][x][us_LogPt] = us_cmap[y][x];
+		}
+	}
+	us_LogPt++;
+#endif
+
+}
+
 // *************************************************************************
 //   機能		： マウスの進行方向を決定する
 //   注意		： なし
@@ -1331,7 +1512,7 @@ PRIVATE void Simu_makeMapData(void)
 		uc_wall = 0xfe;
 	}
 	else {
-		uc_wall = g_trgtMap[my][mx];
+		uc_wall = g_trgtMap[my][mx]|0xf0;
 	}
 	g_sysMap[my][mx] = uc_wall;
 
@@ -1522,7 +1703,7 @@ PRIVATE void MAP_moveNextBlock_acc(enMAP_HEAD_DIR en_head, BOOL* p_type)
 				else {
 	//				printf("NORTH\n");
 	//				printf("StrCnt%d\n", st_known.uc_StrCnt);
-					std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+	//				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 	//				MOT_setTrgtSpeed(MAP_KNOWN_ACC_SPEED);									// 既知区間加速するときの目標速度	
 	//				MOT_goBlock_FinSpeed((FLOAT)(st_known.uc_StrCnt - 1), MAP_SEARCH_SPEED);				// n区画前進
 	//				MOT_setTrgtSpeed(MAP_SEARCH_SPEED);										// 目標速度をデフォルト値に戻す
@@ -1552,7 +1733,7 @@ PRIVATE void MAP_moveNextBlock_acc(enMAP_HEAD_DIR en_head, BOOL* p_type)
 			else {
 //				printf("EAST\n");
 	//			printf("StrCnt%d\n", st_known.uc_StrCnt);
-				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+//				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 //				MOT_setTrgtSpeed(MAP_KNOWN_ACC_SPEED);									// 既知区間加速するときの目標速度	
 //				MOT_goBlock_FinSpeed((FLOAT)(st_known.uc_StrCnt - 1), MAP_SEARCH_SPEED);				// n区画前進
 //				MOT_setTrgtSpeed(MAP_SEARCH_SPEED);										// 目標速度をデフォルト値に戻す
@@ -1595,7 +1776,7 @@ PRIVATE void MAP_moveNextBlock_acc(enMAP_HEAD_DIR en_head, BOOL* p_type)
 			else {
 //				printf("WEST\n");
 	//			printf("StrCnt%d\n", st_known.uc_StrCnt);
-				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+//				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 //				MOT_setTrgtSpeed(MAP_KNOWN_ACC_SPEED);									// 既知区間加速するときの目標速度	
 //				MOT_goBlock_FinSpeed((FLOAT)(st_known.uc_StrCnt - 1), MAP_SEARCH_SPEED);				// n区画前進
 //				MOT_setTrgtSpeed(MAP_SEARCH_SPEED);										// 目標速度をデフォルト値に戻す
@@ -1802,7 +1983,7 @@ PUBLIC void Simu_searchGoal(
 //		printf("time %lf[ms]\n", time);
 
 		maze_show_search(en_Head, mx, my);//map表記
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+//		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
