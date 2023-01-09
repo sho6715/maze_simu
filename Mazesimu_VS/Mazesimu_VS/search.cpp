@@ -102,29 +102,6 @@ PUBLIC void MAP_init(void)
 	/* 走行用のパラメータ */
 	f_MoveBackDist = 0;
 	uc_SlaCnt = 0;
-
-	//	Storage_Load( (const void*)uc_dummy, sizeof(uc_dummy), ADR_MAP );			// データロード(dummy) これがないと次の１発目のsaveがうまくいかない
-
-		/* バックアップ迷路の復帰 */
-	/*	Storage_Load( (const void*)uc_back, sizeof(uc_back), ADR_MAP );				// バックアップデータを復帰する
-		if( ( uc_back[0][0] & 0xf0 ) == 0xf0  ){									// データがあったら
-
-			printf("\n\r　　　　　　　　　　　　＼　│　／");
-			printf("\n\r　　　　　　　　　　　　　／￣＼　　／￣￣￣￣￣￣￣￣￣");
-			printf("\n\r　　　　　　　　　　　─（ﾟ ∀ ﾟ）＜　迷路データをぉぉぉ");
-			printf("\n\r　　　　　　　　　　　　　＼＿／　　＼＿＿＿＿＿＿＿＿＿");
-			printf("\n\r　　　　　　　　　　　　／　│　＼");
-			printf("\n\r　　　　　　　　　　　　　　　 ∩ ∧　∧∩ ／￣￣￣￣￣￣￣￣￣￣");
-			printf("\n\r　￣￣￣￣￣￣￣￣＼ ∩∧ ∧∩ ＼（ ﾟ∀ﾟ）＜　復帰だ復帰だ復帰だ！");
-			printf("\n\r　　復帰だ～～～！ ＞（ﾟ∀ﾟ）/ 　｜　　　/　＼＿＿＿＿＿＿＿＿＿＿");
-			printf("\n\r　＿＿＿＿＿＿＿＿／ ｜　　〈　　｜　　 ｜");
-			printf("\n\r　　　　　　　　　　 /　／＼_」　/　／＼」");
-			printf("\n\r　　　　　　　　　　 ￣　　　　 / ／");
-			printf("\n\r　　　　　　　　　　　　　　　  ￣");
-			Storage_Load( (const void*)g_sysMap, sizeof(g_sysMap), ADR_MAP );		// バックアップ迷路データで現在の迷路情報を上書き
-		}
-
-	*/
 }
 
 // *************************************************************************
@@ -142,64 +119,6 @@ PUBLIC void MAP_Goal_init(void)
 	GOAL_MAP_Y = GOAL_MAP_Y_def;
 }
 
-// *************************************************************************
-//   機能		： Xゴール座標変更プログラム
-//   注意		： なし
-//   メモ		： なし
-//   引数		： なし
-//   返り値		： なし
-// **************************    履    歴    *******************************
-// 		v1.0		2019.08.05			sato		新規
-// *************************************************************************/
-/*PUBLIC void MAP_Goal_change_x(void)
-{
-	LED4 = GOAL_MAP_X;
-	while (1) {
-		if (SW_ON == SW_INC_PIN) {
-			GOAL_MAP_X = GOAL_MAP_X++;
-			if (GOAL_MAP_X == 16) {
-				GOAL_MAP_X = 0;
-			}
-			LED4 = GOAL_MAP_X;
-			TIME_wait(SW_CHATTERING_WAIT);			// SWが離されるまで待つ
-			printf("GOAL_x %d\r\n", GOAL_MAP_X);
-		}
-		else if ((SW_ON == SW_EXE_PIN) || (TRUE == MODE_CheckExe())) {
-			LED4 = LED4_ALL_OFF;
-			break;
-		}
-	}
-}
-*/
-// *************************************************************************
-//   機能		： yゴール座標変更プログラム
-//   注意		： なし
-//   メモ		： なし
-//   引数		： なし
-//   返り値		： なし
-// **************************    履    歴    *******************************
-// 		v1.0		2019.08.05			sato		新規
-// *************************************************************************/
-/*PUBLIC void MAP_Goal_change_y(void)
-{
-	LED4 = GOAL_MAP_Y;
-	while (1) {
-		if (SW_ON == SW_INC_PIN) {
-			GOAL_MAP_Y = GOAL_MAP_Y++;
-			if (GOAL_MAP_Y == 16) {
-				GOAL_MAP_Y = 0;
-			}
-			LED4 = GOAL_MAP_Y;
-			TIME_wait(SW_CHATTERING_WAIT);			// SWが離されるまで待つ
-			printf("GOAL_y %d\r\n", GOAL_MAP_Y);
-		}
-		else if ((SW_ON == SW_EXE_PIN) || (TRUE == MODE_CheckExe())) {
-			LED4 = LED4_ALL_OFF;
-			break;
-		}
-	}
-}
-*/
 // *************************************************************************
 //   機能		： 迷路情報をクリアする
 //   注意		： なし
@@ -221,7 +140,6 @@ PUBLIC void MAP_ClearMapData(void)
 	f_MoveBackDist = 0;
 	uc_SlaCnt = 0;
 
-	//	Storage_Clear( sizeof(g_sysMap), ADR_MAP );			// データセーブ
 
 }
 
@@ -509,8 +427,6 @@ PUBLIC void  MAP_makeContourMap(
 	LARGE_INTEGER start, end;
 
 	QueryPerformanceCounter(&start);
-
-
 
 	/* 等高線マップを初期化する */
 	for (i = 0; i < MAP_SMAP_MAX_VAL; i++) {
@@ -801,7 +717,7 @@ PUBLIC void MAP_clearMap_direction(void)
 
 }
 
-PUBLIC void  MAP_makeContourMap_dijkstra(
+PUBLIC void  MAP_makeContourMap_dijkstra_modoki(
 	UCHAR uc_goalX, 			///< [in] ゴールX座標
 	UCHAR uc_goalY, 			///< [in] ゴールY座標
 	enMAP_ACT_MODE	en_type		///< [in] 計算方法（まだ未使用）
@@ -963,6 +879,112 @@ PUBLIC void  MAP_makeContourMap_dijkstra(
 	}
 	us_LogPt++;
 #endif
+
+}
+
+void  MAP_makeContourMap_maltigoal(
+	UCHAR uc_goalX, 			///< [in] ゴールX座標
+	UCHAR uc_goalY, 			///< [in] ゴールY座標
+	enMAP_ACT_MODE	en_type		///< [in] 計算方法（まだ未使用）
+) {
+	USHORT		x, y, i;		// ループ変数
+	USHORT		uc_dase;		// 基準値
+	USHORT		uc_new;			// 新値
+	USHORT		uc_level;		// 等高線
+	UCHAR		uc_wallData;	// 壁情報
+
+	stPOSITION		st_pos;
+
+	en_type = en_type;		// コンパイルワーニング回避（いずれ削除）
+
+	queue_t queue;
+	queue_t* pQueue = &queue;
+
+	initQueue(pQueue);
+
+
+	/* 等高線マップを初期化する */
+	for (i = 0; i < MAP_SMAP_MAX_VAL; i++) {
+		us_cmap[i / MAP_Y_SIZE][i & (MAP_X_SIZE - 1)] = MAP_SMAP_MAX_VAL - 1;
+	}
+
+	us_cmap[uc_goalY][uc_goalX] = 0;
+	if (GOAL_SIZE == 4) {
+		us_cmap[uc_goalY + 1][uc_goalX] = 0;
+		us_cmap[uc_goalY][uc_goalX + 1] = 0;
+		us_cmap[uc_goalY + 1][uc_goalX + 1] = 0;
+	}
+	else if (GOAL_SIZE == 9){
+		us_cmap[uc_goalY+1][uc_goalX] = 0;
+		us_cmap[uc_goalY][uc_goalX+1] = 0;
+		us_cmap[uc_goalY+1][uc_goalX+1] = 0;
+		us_cmap[uc_goalY+2][uc_goalX] = 0;
+		us_cmap[uc_goalY+2][uc_goalX+1] = 0;
+		us_cmap[uc_goalY][uc_goalX+2] = 0;
+		us_cmap[uc_goalY+1][uc_goalX+2] = 0;
+		us_cmap[uc_goalY+2][uc_goalX+2] = 0;
+	}
+
+	/* ステップの更新予約のキュー */
+//	std::queue<stPOSITION> q;
+//	QueryPerformanceCounter(&start);
+
+	/* 目標地点の等高線を0に設定 */
+//	setStep(uc_goalX, uc_goalY, 0);
+	st_pos.x = uc_goalX;
+	st_pos.y = uc_goalY;
+	st_pos.step = 0;
+
+	enqueue(pQueue,st_pos);
+
+	/* 等高線マップを作成 */
+	while (pQueue->flag != EMPTY) {
+		const auto focus = dequeue(pQueue);
+//		q.pop();
+		const auto focus_step = focus.step;
+		x = focus.x;
+		y = focus.y;
+		auto next = focus;
+		uc_wallData = g_sysMap[y][x];
+
+		if (((uc_wallData & 0x01) == 0x00) && (y != (MAP_Y_SIZE - 1))) {
+			if (us_cmap[y + 1][x] > focus_step + 1) {
+				next.step = focus_step + 1;
+				us_cmap[y + 1][x] = focus_step + 1;
+				next.x = x;
+				next.y = y + 1;
+				enqueue(pQueue,next);
+			}
+		}
+		if (((uc_wallData & 0x02) == 0x00) && (x != (MAP_X_SIZE - 1))) {
+			if (us_cmap[y][x + 1] > focus_step + 1) {
+				next.step = focus_step + 1;
+				us_cmap[y][x + 1] = focus_step + 1;
+				next.x = x + 1;
+				next.y = y;
+				enqueue(pQueue, next);
+			}
+		}
+		if (((uc_wallData & 0x04) == 0x00) && (y != 0)) {
+			if (us_cmap[y - 1][x] > focus_step + 1) {
+				next.step = focus_step + 1;
+				us_cmap[y - 1][x] = focus_step + 1;
+				next.x = x;
+				next.y = y - 1;
+				enqueue(pQueue, next);
+			}
+		}
+		if (((uc_wallData & 0x08) == 0x00) && (x != 0)) {
+			if (us_cmap[y][x - 1] > focus_step + 1) {
+				next.step = focus_step + 1;
+				us_cmap[y][x - 1] = focus_step + 1;
+				next.x = x - 1;
+				next.y = y;
+				enqueue(pQueue, next);
+			}
+		}
+
+	}
 
 }
 
@@ -1312,51 +1334,6 @@ PRIVATE void MAP_actGoal(void)
 
 }
 
-// *************************************************************************
-//   機能		： ゴール時のLED動作
-//   注意		： なし
-//   メモ		： なし
-//   引数		： なし
-//   返り値		： なし
-// **************************    履    歴    *******************************
-// 		v1.0		2018.09.27			sato		新規
-// *************************************************************************/
-/*PUBLIC void MAP_actGoalLED(void)
-{
-	int i;
-	for (i = 0; i < 2; i++)
-	{
-		LED4 = 0x01;
-
-		TIME_wait(100);
-		LED4 = 0x02;
-
-		TIME_wait(100);
-		LED4 = 0x04;
-
-		TIME_wait(100);
-		LED4 = 0x08;
-
-		TIME_wait(100);
-		LED4 = 0x08;
-
-		TIME_wait(100);
-		LED4 = 0x04;
-
-		TIME_wait(100);
-		LED4 = 0x02;
-
-		TIME_wait(100);
-		LED4 = 0x01;
-
-		TIME_wait(100);
-	}
-
-	TIME_wait(100);
-	map_write();
-	LED4 = LED4_ALL_ON;
-}
-*/
 // *************************************************************************
 //   機能		： ゴールの探索動作
 //   注意		： なし
@@ -1877,7 +1854,8 @@ PUBLIC void Simu_searchGoal(
 		uc_staX = mx;
 		uc_staY = my;
 		printf("mx%d,my%d\n", mx, my);
-		MAP_makeContourMap(uc_trgX, uc_trgY, en_type);
+//		MAP_makeContourMap(uc_trgX, uc_trgY, en_type);
+		MAP_makeContourMap_maltigoal(uc_trgX, uc_trgY, en_type);
 		Simu_searchCmdList(uc_staX, uc_staY, en_Head, uc_goalX, uc_goalX, &en_endDir);
 		uc_trgX = Return_X;
 		uc_trgY = Return_Y;
@@ -1921,7 +1899,8 @@ PUBLIC void Simu_searchGoal(
 		}
 		/* スラローム探索 */
 		else if (SEARCH_SURA == en_search) {
-			MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+//			MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+			MAP_makeContourMap_maltigoal(uc_trgX, uc_trgY, en_type);
 //			MAP_makeContourMap_kai2(uc_trgX, uc_trgY, en_type);
 //			MAP_showcountLog();
 			//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
@@ -2066,5 +2045,212 @@ PUBLIC void MAP_searchGoalKnown(UCHAR uc_trgX, UCHAR uc_trgY, enMAP_ACT_MODE en_
 		maze_show_search(en_Head, mx, my);//map表記
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 //		printf("mx%d,my%d\n", mx, my);
+	}
+}
+
+stPOSITION unknown_cell_data[1000];
+uint16_t cell_count = 0;
+
+void Search_unknown_cell(void){
+	for(uint8_t y=0;y<MAP_Y_SIZE;y++){
+		for(uint8_t x=0;x<MAP_X_SIZE;x++){
+			if((g_sysMap[y][x] & 0xf0) != 0xf0){
+				unknown_cell_data[cell_count].x = x;
+				unknown_cell_data[cell_count].y = y;
+				unknown_cell_data[cell_count].step = 0;
+				cell_count++;
+			}
+		}
+	}
+	std::cout << "\ncell_count";
+	std::cout << cell_count;
+	std::cout <<"\n";
+}
+
+void Set_unknown_cell(){
+	for(uint16_t i = 0;i<cell_count;i++){
+		if(unknown_cell_data[i].step == 0){
+			setStep(unknown_cell_data[i].x,unknown_cell_data[i].y,0);
+		}
+	}
+}
+void Delete_unknown_cell(uint8_t mx,uint8_t my){
+	//stepを印付けに流用
+	for(uint16_t i = 0;i<cell_count;i++){
+		if((unknown_cell_data[i].x == mx)&&(unknown_cell_data[i].y == my)){
+			unknown_cell_data[i].step = 1;
+		}
+	}
+}
+
+void  MAP_makeContourMap_maltigoal_return(
+	UCHAR uc_goalX, 			///< [in] ゴールX座標
+	UCHAR uc_goalY, 			///< [in] ゴールY座標
+	enMAP_ACT_MODE	en_type		///< [in] 計算方法（まだ未使用）
+) {
+	USHORT		x, y, i;		// ループ変数
+	USHORT		uc_dase;		// 基準値
+	USHORT		uc_new;			// 新値
+	USHORT		uc_level;		// 等高線
+	UCHAR		uc_wallData;	// 壁情報
+
+	stPOSITION		st_pos;
+
+	en_type = en_type;		// コンパイルワーニング回避（いずれ削除）
+
+	queue_t queue;
+	queue_t* pQueue = &queue;
+
+	initQueue(pQueue);
+
+
+	/* 等高線マップを初期化する */
+	for (i = 0; i < MAP_SMAP_MAX_VAL; i++) {
+		us_cmap[i / MAP_Y_SIZE][i & (MAP_X_SIZE - 1)] = MAP_SMAP_MAX_VAL - 1;
+	}
+	Set_unknown_cell();
+	MAP_showcountLog();
+
+	/* ステップの更新予約のキュー */
+//	std::queue<stPOSITION> q;
+//	QueryPerformanceCounter(&start);
+
+	/* 目標地点の等高線を0に設定 */
+//	setStep(uc_goalX, uc_goalY, 0);
+	for(uint16_t i = 0;i<cell_count;i++){
+		if(unknown_cell_data[i].step == 0){
+			st_pos.x = unknown_cell_data[i].x;
+			st_pos.y = unknown_cell_data[i].y;
+			st_pos.step = 0;
+			enqueue(pQueue,st_pos);
+		}
+	}
+
+	/* 等高線マップを作成 */
+	while (pQueue->flag != EMPTY) {
+		const auto focus = dequeue(pQueue);
+//		q.pop();
+		const auto focus_step = focus.step;
+		x = focus.x;
+		y = focus.y;
+		auto next = focus;
+		uc_wallData = g_sysMap[y][x];
+
+		if (((uc_wallData & 0x01) == 0x00) && (y != (MAP_Y_SIZE - 1))) {
+			if (us_cmap[y + 1][x] > focus_step + 1) {
+				next.step = focus_step + 1;
+				us_cmap[y + 1][x] = focus_step + 1;
+				next.x = x;
+				next.y = y + 1;
+				enqueue(pQueue,next);
+			}
+		}
+		if (((uc_wallData & 0x02) == 0x00) && (x != (MAP_X_SIZE - 1))) {
+			if (us_cmap[y][x + 1] > focus_step + 1) {
+				next.step = focus_step + 1;
+				us_cmap[y][x + 1] = focus_step + 1;
+				next.x = x + 1;
+				next.y = y;
+				enqueue(pQueue, next);
+			}
+		}
+		if (((uc_wallData & 0x04) == 0x00) && (y != 0)) {
+			if (us_cmap[y - 1][x] > focus_step + 1) {
+				next.step = focus_step + 1;
+				us_cmap[y - 1][x] = focus_step + 1;
+				next.x = x;
+				next.y = y - 1;
+				enqueue(pQueue, next);
+			}
+		}
+		if (((uc_wallData & 0x08) == 0x00) && (x != 0)) {
+			if (us_cmap[y][x - 1] > focus_step + 1) {
+				next.step = focus_step + 1;
+				us_cmap[y][x - 1] = focus_step + 1;
+				next.x = x - 1;
+				next.y = y;
+				enqueue(pQueue, next);
+			}
+		}
+
+	}
+
+}
+
+
+PUBLIC void Simu_searchGoal_all(
+	UCHAR 			uc_trgX, 		///< [in] 目標x座標
+	UCHAR 			uc_trgY, 		///< [in] 目標y座標 
+	enMAP_ACT_MODE 	en_type, 		///< [in] 探索方法
+	enSEARCH_MODE	en_search		///< [in] 探索方法
+) {
+	enMAP_HEAD_DIR	en_head = NORTH;
+	BOOL		bl_type = TRUE;			// 現在位置、FALSE: １区間前進状態、TURE:半区間前進状態
+	enMAP_HEAD_DIR		en_endDir;
+
+	UCHAR uc_goalX;
+	UCHAR uc_goalY;
+	UCHAR uc_staX;
+	UCHAR uc_staY;
+
+		/* 迷路探索 */
+	while (1) {
+		MAP_refMousePos(en_Head);								// 座標更新
+		printf("mx%d,my%d\n", mx, my);
+//		MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+//		MAP_showcountLog();
+//		maze_show_search(en_Head,mx,my);//map表記
+		/* 超信地旋回探索 */
+		if (SEARCH_TURN == en_search) {
+			MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+			MAP_showcountLog();
+			//			MAP_makeMapData();												// 壁データから迷路データを作成			← ここでデータ作成をミスっている
+			Simu_makeMapData();//壁用のプログラムを作成			
+			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);						// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
+
+			/* 次の区画へ移動 */
+//			if ((mx == uc_trgX) && (my == uc_trgY)) {
+			if (us_cmap[my][mx] == 0) {
+				std::cout << "goal!!\n";
+				MAP_actGoal();										// ゴール時の動作
+				break;
+			}
+			else {
+				//				MAP_moveNextBlock(en_head, &bl_type);				// 次の区画へ移動								← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
+				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
+			}
+		}
+		/* スラローム探索 */
+		else if (SEARCH_SURA == en_search) {
+//			MAP_makeContourMap(uc_trgX, uc_trgY, en_type);		// 等高線マップを作る
+			Delete_unknown_cell(mx,my);
+			MAP_makeContourMap_maltigoal_return(uc_trgX, uc_trgY, en_type);
+//			MAP_makeContourMap_kai2(uc_trgX, uc_trgY, en_type);
+//			MAP_showcountLog();
+			//			MAP_makeMapData();										// 壁データから迷路データを作成			← ここでデータ作成をミスっている
+			if (st_known.bl_Known != TRUE) {
+	//			MAP_makeMapData();		// 壁データから迷路データを作成
+				Simu_makeMapData();
+			}
+			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);				// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
+
+			/* 次の区画へ移動 */
+//			if ((us_cmap[my][mx] == 0) || ((g_sysMap[uc_trgY][uc_trgX] & 0xf0) == 0xf0)) {
+				if ((mx == 0) && (my == 0)) {
+					MAP_actGoal();
+					break;
+				}
+//			}
+			else {
+				//				MAP_moveNextBlock_Sura(en_head, &bl_type, FALSE);	// 次の区画へ移動						← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
+				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
+
+			}
+		}
+
+
+		maze_show_search(en_Head, mx, my);//map表記
+		MAP_showcountLog();
+//		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }

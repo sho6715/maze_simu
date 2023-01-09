@@ -100,7 +100,8 @@ PUBLIC void MAP_setPos(UCHAR uc_x, UCHAR uc_y, enMAP_HEAD_DIR en_dir);
 PUBLIC void MAP_searchGoal(UCHAR uc_trgX, UCHAR uc_trgY, enMAP_ACT_MODE en_type, enSEARCH_MODE en_search);
 PUBLIC void MAP_makeContourMap(UCHAR uc_goalX, UCHAR uc_goalY, enMAP_ACT_MODE en_type);
 PUBLIC void MAP_makeContourMap_kai2(UCHAR uc_goalX, UCHAR uc_goalY, enMAP_ACT_MODE en_type);
-PUBLIC void MAP_makeContourMap_dijkstra(UCHAR uc_goalX, UCHAR uc_goalY, enMAP_ACT_MODE en_type);
+PUBLIC void MAP_makeContourMap_dijkstra_modoki(UCHAR uc_goalX, UCHAR uc_goalY, enMAP_ACT_MODE en_type);
+PUBLIC void MAP_makeContourMap_maltigoal(UCHAR uc_goalX, UCHAR uc_goalY, enMAP_ACT_MODE en_type);
 PUBLIC void MAP_actGoalLED(void);
 
 PUBLIC void MAP_ClearMapData(void);
@@ -114,8 +115,20 @@ PUBLIC void Simu_searchGoal(
 	enMAP_ACT_MODE 	en_type, 		///< [in] 探索方法
 	enSEARCH_MODE	en_search 		///< [in] 探索方法
 );
+PUBLIC void Simu_searchGoal_all(
+	UCHAR 			uc_trgX, 		///< [in] 目標x座標
+	UCHAR 			uc_trgY, 		///< [in] 目標y座標 
+	enMAP_ACT_MODE 	en_type, 		///< [in] 探索方法
+	enSEARCH_MODE	en_search 		///< [in] 探索方法
+);
+void  MAP_makeContourMap_maltigoal_return(
+	UCHAR uc_goalX, 			///< [in] ゴールX座標
+	UCHAR uc_goalY, 			///< [in] ゴールY座標
+	enMAP_ACT_MODE	en_type		///< [in] 計算方法（まだ未使用）
+);
 
 //TKR
 PUBLIC void MAP_searchGoalKnown(UCHAR uc_trgX, UCHAR uc_trgY, enMAP_ACT_MODE en_type);
+void Search_unknown_cell(void);
 
 #endif //_SEARCH_H

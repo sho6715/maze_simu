@@ -252,7 +252,7 @@ PUBLIC void Simu_searchCmdList(
 	enMAP_HEAD_DIR* en_endDir		///< [out] 終了時の方向
 );
 
-PUBLIC void MAP_makeCmdList_dijkstra(
+PUBLIC void MAP_makeCmdList_dijkstra_modoki(
 	UCHAR uc_staX,					///< [in] 開始X座標
 	UCHAR uc_staY,					///< [in] 開始Y座標
 	enMAP_HEAD_DIR en_staDir,		///< [in] 開始時の方向

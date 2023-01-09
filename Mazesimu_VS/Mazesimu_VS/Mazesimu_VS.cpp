@@ -6,10 +6,12 @@
 #include "search.h"
 #include "map_cmd.h"
 #include "Maze.h"
+
 #include <algorithm>
 
 #include <chrono>
 #include <thread>
+
 
 int main()
 {
@@ -42,29 +44,37 @@ int main()
 
 	MAP_Goal_init();
 	MAP_Goalsize(maze_set.goal_count);
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+
 	MAP_setPos(0, 0, NORTH);								// スタート位置
-	MAP_makeContourMap(maze_set.goal_map_x, maze_set.goal_map_y, BEST_WAY);					// 等高線マップを作る
+	MAP_makeContourMap_maltigoal(maze_set.goal_map_x, maze_set.goal_map_y, BEST_WAY);					// 等高線マップを作る
+//	MAP_makeContourMap_kai2(maze_set.goal_map_x, maze_set.goal_map_y, BEST_WAY);					// 等高線マップを作る
 
 	MAP_showcountLog();
 	std::cout << "\n";
 	maze_set.maze_show_trgt();
 	std::cout << "\n";
 	MAP_init();
+
 	MAP_Goalsize(1);
-	
 //	MAP_searchGoalKnown(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH);
 
 	Simu_searchGoal(maze_set.goal_map_x, maze_set.goal_map_y, SEARCH, SEARCH_SURA);
+	
+	Search_unknown_cell();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 	std::cout<<"RETURN_START\n";
 	MAP_Goalsize(1);
-	MAP_makeContourMap(0, 0, SEARCH);
+	MAP_makeContourMap_maltigoal_return(0, 0, SEARCH);
 	MAP_showcountLog();
-	MAP_searchGoalKnown(0, 0, SEARCH);
-	Simu_searchGoal( 0, 0, SEARCH, SEARCH_RETURN );
-
+//	MAP_searchGoalKnown(0, 0, SEARCH);
+//	Simu_searchGoal( 0, 0, SEARCH, SEARCH_RETURN );
+	Simu_searchGoal_all( 0, 0, SEARCH, SEARCH_SURA );
+/*
+//コマンド走行テストコード
 	MAP_Goal_init();
 	MAP_makeContourMap(maze_set.goal_map_x, maze_set.goal_map_y, BEST_WAY);
 	MAP_showcountLog();
@@ -73,16 +83,19 @@ int main()
 	MAP_makeSuraCmdList();													// スラロームコマンド作成
 	MAP_makeSkewCmdList();
 	MAP_showCmdLog();
-	printf("\n\ndijkstra\n");
+
+	printf("\n\ndijkstra_modoki\n");
 	MAP_Goal_init();
-	MAP_makeContourMap_dijkstra(maze_set.goal_map_x, maze_set.goal_map_y, BEST_WAY);
+	MAP_makeContourMap_dijkstra_modoki(maze_set.goal_map_x, maze_set.goal_map_y, BEST_WAY);
 	MAP_showcountLog();
 	MAP_Goalsize(1);
 	
-	MAP_makeCmdList_dijkstra(0, 0, NORTH, maze_set.goal_map_x, maze_set.goal_map_y, &en_endDir);		// ドライブコマンド作成
+	MAP_makeCmdList_dijkstra_modoki(0, 0, NORTH, maze_set.goal_map_x, maze_set.goal_map_y, &en_endDir);		// ドライブコマンド作成
 	MAP_makeSuraCmdList();													// スラロームコマンド作成
 	MAP_makeSkewCmdList();
 	MAP_showCmdLog();
+
+*/
 }
 
 // プログラムの実行: Ctrl + F5 または [デバッグ] > [デバッグなしで開始] メニュー

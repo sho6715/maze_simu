@@ -1,6 +1,6 @@
 #pragma once
 #include <stdio.h>
-#define SIZE 64
+#define SIZE 1000
 
 typedef struct {
 	uint8_t		x;
