@@ -121,6 +121,13 @@ PUBLIC void Simu_searchGoal_all(
 	enMAP_ACT_MODE 	en_type, 		///< [in] ’Tõ•û–@
 	enSEARCH_MODE	en_search 		///< [in] ’Tõ•û–@
 );
+PUBLIC void Simu_searchGoal_dijkstra(
+	UCHAR 			uc_trgX, 		///< [in] –Ú•WxÀ•W
+	UCHAR 			uc_trgY, 		///< [in] –Ú•WyÀ•W 
+	enMAP_ACT_MODE 	en_type, 		///< [in] ’Tõ•û–@
+	enSEARCH_MODE	en_search 		///< [in] ’Tõ•û–@
+);
+
 void  MAP_makeContourMap_maltigoal_return(
 	UCHAR uc_goalX, 			///< [in] ƒS[ƒ‹XÀ•W
 	UCHAR uc_goalY, 			///< [in] ƒS[ƒ‹YÀ•W

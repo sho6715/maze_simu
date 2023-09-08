@@ -2254,3 +2254,55 @@ PUBLIC void Simu_searchGoal_all(
 //		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
+
+
+PUBLIC void Simu_searchGoal_dijkstra(
+	UCHAR 			uc_trgX, 		///< [in] 目標x座標
+	UCHAR 			uc_trgY, 		///< [in] 目標y座標 
+	enMAP_ACT_MODE 	en_type, 		///< [in] 探索方法
+	enSEARCH_MODE	en_search		///< [in] 探索方法
+) {
+	enMAP_HEAD_DIR	en_head = NORTH;
+	BOOL		bl_type = TRUE;			// 現在位置、FALSE: １区間前進状態、TURE:半区間前進状態
+	enMAP_HEAD_DIR		en_endDir;
+
+	UCHAR uc_goalX;
+	UCHAR uc_goalY;
+	UCHAR uc_staX;
+	UCHAR uc_staY;
+
+		/* 迷路探索 */
+	while (1) {
+		LARGE_INTEGER freq;
+		QueryPerformanceFrequency(&freq);
+		LARGE_INTEGER start, end;
+
+		MAP_refMousePos(en_Head);								// 座標更新
+		printf("mx%d,my%d\n", mx, my);
+
+		/* スラローム探索 */
+		if (SEARCH_SURA == en_search) {
+			MAP_makeContourMap_maltigoal(uc_trgX, uc_trgY, en_type);
+			if (st_known.bl_Known != TRUE) {
+				Simu_makeMapData();
+			}
+			MAP_calcMouseDir(CONTOUR_SYSTEM, &en_head);				// 等高線MAP法で進行方向を算出			← 誤ったMAPを作成
+
+			/* 次の区画へ移動 */
+//			if ((mx == uc_trgX) && (my == uc_trgY)) {
+			if (us_cmap[my][mx] == 0) {
+				std::cout << "goal!!\n";
+				MAP_actGoal();										// ゴール時の動作
+				break;
+			}
+			else {
+//				MAP_moveNextBlock_Sura(en_head, &bl_type, FALSE);	// 次の区画へ移動						← ここで改めてリリースチェック＋壁再度作成＋等高線＋超信地旋回動作
+				Simu_moveNextBlock(en_head, &bl_type);//移動方向のプログラムを作成
+
+			}
+		}
+
+		maze_show_search(en_Head, mx, my);//map表記
+//		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+}

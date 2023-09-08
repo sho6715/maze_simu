@@ -16,12 +16,12 @@
 *
 *********************************************************************/
 
-// ‘½dƒRƒ“ƒpƒCƒ‹—}Ž~
+// ï¿½ï¿½ï¿½dï¿½Rï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½}ï¿½~
 #ifndef _TYPEDEF_DEFINE_H
 #define _TYPEDEF_DEFINE_H
 
 /* -------------- */
-/*  ˆÈ‰º“ÆŽ©’è‹`  */
+/*  ï¿½È‰ï¿½ï¿½ÆŽï¿½ï¿½ï¿½`  */
 /* -------------- */
 /* ON/OFF */
 #define ON					(1)
@@ -31,23 +31,23 @@
 #define HI					(1)
 #define LO					(0)
 
-/* ƒXƒR[ƒvÝ’è */
+/* ï¿½Xï¿½Rï¿½[ï¿½vï¿½Ý’ï¿½ */
 #define PUBLIC
 #define PROTECTED
 #define	PRIVATE				static
 
-/* BOOLŒ^ */
+/* BOOLï¿½^ */
 #define	TRUE			(1)
 #define	FALSE			(0)
 //typedef	unsigned char	BOOL;
 //typedef	BOOL* PBOOL;
 
-/* constAstaticAvolatile */
+/* constï¿½Astaticï¿½Avolatile */
 #define CONST				const
 #define STATIC				static
 #define VOLATILE			volatile
 
-/* Œ^’è‹` */
+/* ï¿½^ï¿½ï¿½` */
 typedef unsigned char		UCHAR;
 typedef char				CHAR;
 typedef unsigned short		USHORT;
@@ -66,10 +66,10 @@ typedef SHORT* PSHORT;
 typedef LONG* PLONG;
 typedef FLOAT* PFLOAT;
 typedef DOUBLE* PDOUBLE;
-typedef CHAR				STR;			// •¶Žš—ñ‚Í‚±‚Ì’è‹`‚ðŽg—p
-typedef CONST CHAR			CSTR;			// •¶Žš—ñ‚Í‚±‚Ì’è‹`‚ðŽg—p
-typedef CHAR* PSTR;			// •¶Žš—ñ‚Í‚±‚Ì’è‹`‚ðŽg—p
-typedef CONST CHAR* PCSTR;			// PSTR‚ðROM‚ÉŠi”[‚·‚éê‡‚Í‚±‚¿‚ç‚ðŽg—p
+typedef CHAR				STR;			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½Ì’ï¿½`ï¿½ï¿½ï¿½gï¿½p
+typedef CONST CHAR			CSTR;			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½Ì’ï¿½`ï¿½ï¿½ï¿½gï¿½p
+typedef CHAR* PSTR;			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½Ì’ï¿½`ï¿½ï¿½ï¿½gï¿½p
+typedef CONST CHAR* PCSTR;			// PSTRï¿½ï¿½ROMï¿½ÉŠiï¿½[ï¿½ï¿½ï¿½ï¿½ê‡ï¿½Í‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½p
 typedef volatile CHAR		VCHAR;
 typedef volatile UCHAR		VUCHAR;
 typedef volatile SHORT		VSHORT;
@@ -79,16 +79,26 @@ typedef volatile ULONG		VULONG;
 typedef volatile FLOAT		VFLOAT;
 typedef void* PVOID;
 
-/* BOOLŒ^ */
+typedef unsigned char   uint8_t;
+typedef char            int8_t;
+typedef unsigned short  uint16_t;
+typedef short           int16_t;
+typedef unsigned int    uint16_t;
+typedef int             int16_t;
+typedef unsigned long   uint32_t;
+typedef long            int32_t;
+
+
+/* BOOLï¿½^ */
 #define	TRUE			(1)
 #define	FALSE			(0)
 
-/* ƒ}ƒNƒ */
+/* ï¿½}ï¿½Nï¿½ï¿½ */
 #define FABS(x)						( (x)>=0 ? (x) : -(x) )
 
 
 /* ------------- */
-/*  Renesas’è‹`  */
+/*  Renesasï¿½ï¿½`  */
 /* ------------- */
 typedef signed char _SBYTE;
 typedef unsigned char _UBYTE;
